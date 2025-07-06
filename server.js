@@ -7,6 +7,15 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { Logger } from './logger.js';
 import { callOpenAI, createThread } from './services/openaiService.js';
+import { 
+    register, 
+    httpRequestsTotal, 
+    httpRequestDuration, 
+    openaiRequestsTotal, 
+    openaiRequestDuration, 
+    activeThreads, 
+    inappropriateContentBlocked 
+} from './metrics.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,6 +34,21 @@ app.use(session({
     cookie: { secure: process.env.NODE_ENV === 'production' }
 }));
 
+// Prometheus metrics middleware
+app.use((req, res, next) => {
+    const start = Date.now();
+    
+    res.on('finish', () => {
+        const duration = (Date.now() - start) / 1000;
+        const route = req.route ? req.route.path : req.path;
+        
+        httpRequestsTotal.labels(req.method, route, res.statusCode).inc();
+        httpRequestDuration.labels(req.method, route, res.statusCode).observe(duration);
+    });
+    
+    next();
+});
+
 // Request logging middleware
 app.use((req, res, next) => {
     const sessionId = req.session.id || 'anonymous';
@@ -34,6 +58,35 @@ app.use((req, res, next) => {
         ip: req.ip
     });
     next();
+});
+
+// Prometheus metrics endpoint
+app.get('/metrics', async (req, res) => {
+    try {
+        res.set('Content-Type', register.contentType);
+        res.end(await register.metrics());
+    } catch (error) {
+        res.status(500).end(error);
+    }
+});
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.json({ 
+        status: 'healthy', 
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime()
+    });
+});
+
+// Logs endpoint (for external scraping)
+app.get('/logs', (req, res) => {
+    // You can customize this to return recent logs
+    res.json({
+        message: 'Logs are available via Render dashboard or use /metrics for Prometheus metrics',
+        metrics_endpoint: '/metrics',
+        health_endpoint: '/health'
+    });
 });
 
 // Content filtering function
@@ -51,13 +104,22 @@ function containsInappropriateContent(text) {
 
 // API endpoint to start a new chat session (and create a thread)
 app.post('/api/start', async (req, res) => {
+    const start = Date.now();
+    
     try {
         const thread = await createThread();
-        // Still store in session as backup, but mainly rely on client-side storage
         req.session.threadId = thread.id;
+        
+        // Update metrics
+        activeThreads.inc();
+        const duration = (Date.now() - start) / 1000;
+        openaiRequestsTotal.labels('success').inc();
+        openaiRequestDuration.observe(duration);
+        
         logger.info('New thread created', { threadId: thread.id, sessionId: req.session.id });
         res.json({ threadId: thread.id });
     } catch (error) {
+        openaiRequestsTotal.labels('error').inc();
         logger.error('Failed to create OpenAI thread', { error: error.message, stack: error.stack });
         res.status(500).json({ error: 'Could not start a new session.' });
     }
@@ -67,7 +129,6 @@ app.post('/api/start', async (req, res) => {
 app.post('/api/query', async (req, res) => {
     const startTime = Date.now();
     const sessionId = req.session.id;
-    // Get threadId from request body first, then fallback to session
     const threadId = req.body.threadId || req.session.threadId;
 
     if (!threadId) {
@@ -90,6 +151,7 @@ app.post('/api/query', async (req, res) => {
         }
 
         if (containsInappropriateContent(prompt)) {
+            inappropriateContentBlocked.inc();
             logger.warn('Inappropriate content detected', { sessionId, prompt });
             const warningMessage = "I can only help with learning ICS concepts. Please ask questions related to computer science, programming, or course material. I won't provide direct answers to homework or exams.";
             return res.status(403).json({ message: warningMessage });
@@ -98,6 +160,10 @@ app.post('/api/query', async (req, res) => {
         const aiResponse = await callOpenAI(prompt, threadId);
         const responseTime = Date.now() - startTime;
 
+        // Update metrics
+        openaiRequestsTotal.labels('success').inc();
+        openaiRequestDuration.observe(responseTime / 1000);
+
         logger.logInteraction(sessionId, prompt, aiResponse, process.env.OPENAI_ASSISTANT_ID, responseTime);
         logger.logMetrics(sessionId, 'query_completed', { responseTime, responseLength: aiResponse.length });
 
@@ -105,6 +171,7 @@ app.post('/api/query', async (req, res) => {
 
     } catch (error) {
         const responseTime = Date.now() - startTime;
+        openaiRequestsTotal.labels('error').inc();
         logger.error('Error processing query', { error: error.message, stack: error.stack, sessionId });
         logger.logInteraction(sessionId, req.body.prompt, null, process.env.OPENAI_ASSISTANT_ID, responseTime, error.message);
         logger.logMetrics(sessionId, 'query_failed', { responseTime });
@@ -126,4 +193,5 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, () => {
     logger.info(`Server is running on http://localhost:${PORT}`);
+    logger.info(`Prometheus metrics available at http://localhost:${PORT}/metrics`);
 });
