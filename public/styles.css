@@ -1,0 +1,72 @@
+body {
+    background-color: #f4f7f6;
+}
+
+#chat-window {
+    max-width: 800px;
+}
+
+#chatContainer {
+    height: 65vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #ffffff;
+}
+
+.message {
+    margin-bottom: 15px;
+    padding: 10px 15px;
+    border-radius: 18px;
+    max-width: 80%;
+    line-height: 1.5;
+}
+
+.message.user {
+    align-self: flex-end;
+    background-color: #007bff;
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+
+.message.bot {
+    align-self: flex-start;
+    background-color: #e9ecef;
+    color: #212529;
+    border-bottom-left-radius: 4px;
+}
+
+.message span.role {
+    font-size: 0.75rem;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+    opacity: 0.8;
+    text-transform: capitalize;
+}
+
+#questionInput {
+    resize: none;
+    overflow-y: hidden;
+}
+
+#askButton {
+    height: 100%;
+}
+
+/* For code blocks from markdown */
+pre {
+    background-color: #282c34;
+    color: #abb2bf;
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 0.9rem;
+}
+
+code {
+    font-family: 'Fira Code', 'Courier New', monospace;
+}
