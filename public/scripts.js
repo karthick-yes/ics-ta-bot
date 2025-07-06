@@ -56,7 +56,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const response = await fetch('/api/query', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt: prompt })
+                body: JSON.stringify({ 
+                    prompt: prompt,
+                    threadId: threadId // Send threadId with the request
+                })
             });
 
             const data = await response.json();

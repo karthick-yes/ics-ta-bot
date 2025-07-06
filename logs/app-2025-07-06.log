@@ -44,3 +44,8 @@
 {"timestamp":"2025-07-06T07:02:52.194Z","level":"INFO","message":"POST /api/start","data":{"sessionId":"wx0X2sog_JKj_pNKW3Z0QVdw7yyn_2Kd","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36","ip":"::1"},"pid":11512}
 {"timestamp":"2025-07-06T07:02:52.986Z","level":"INFO","message":"New thread created","data":{"threadId":"thread_LEzsL3zC3FwTA3zKaheiqO8l","sessionId":"wx0X2sog_JKj_pNKW3Z0QVdw7yyn_2Kd"},"pid":11512}
 {"timestamp":"2025-07-06T07:02:53.197Z","level":"INFO","message":"New thread created","data":{"threadId":"thread_ygWJLrWZQgGAfzwHAbbKqJUS","sessionId":"wx0X2sog_JKj_pNKW3Z0QVdw7yyn_2Kd"},"pid":11512}
+{"timestamp":"2025-07-06T07:23:14.568Z","level":"INFO","message":"Server is running on http://localhost:3000","pid":22856}
+{"timestamp":"2025-07-06T07:23:18.762Z","level":"INFO","message":"POST /api/start","data":{"sessionId":"yuGcsBG_Z23yiqhCJyL8YEDpwnE6Fjsc","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36","ip":"::1"},"pid":22856}
+{"timestamp":"2025-07-06T07:23:19.729Z","level":"INFO","message":"New thread created","data":{"threadId":"thread_KowGsYQNrN4Xhy8dt4oERbLL","sessionId":"yuGcsBG_Z23yiqhCJyL8YEDpwnE6Fjsc"},"pid":22856}
+{"timestamp":"2025-07-06T07:23:32.279Z","level":"INFO","message":"POST /api/query","data":{"sessionId":"yuGcsBG_Z23yiqhCJyL8YEDpwnE6Fjsc","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36","ip":"::1"},"pid":22856}
+{"timestamp":"2025-07-06T07:23:38.676Z","level":"INFO","message":"Interaction logged for session yuGcsBG_Z23yiqhCJyL8YEDpwnE6Fjsc","pid":22856}

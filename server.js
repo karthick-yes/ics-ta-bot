@@ -53,6 +53,7 @@ function containsInappropriateContent(text) {
 app.post('/api/start', async (req, res) => {
     try {
         const thread = await createThread();
+        // Still store in session as backup, but mainly rely on client-side storage
         req.session.threadId = thread.id;
         logger.info('New thread created', { threadId: thread.id, sessionId: req.session.id });
         res.json({ threadId: thread.id });
@@ -62,12 +63,12 @@ app.post('/api/start', async (req, res) => {
     }
 });
 
-
 // API endpoint to handle user queries
 app.post('/api/query', async (req, res) => {
     const startTime = Date.now();
     const sessionId = req.session.id;
-    const threadId = req.session.threadId;
+    // Get threadId from request body first, then fallback to session
+    const threadId = req.body.threadId || req.session.threadId;
 
     if (!threadId) {
         logger.warn('Query received without a threadId', { sessionId });
