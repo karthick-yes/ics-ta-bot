@@ -1,2 +1,4 @@
 {"timestamp":"2025-07-10T04:46:23.517Z","sessionId":"x69HqFWaWLEVIwjz8ibGaI-xG-I2YcYC","event":"query_received","data":{"promptLength":3,"userEmail":"ics.learning.ashoka@gmail.com","threadId":"thread_FWvaItUzOCvB4xOo6On4x1lJ"}}
 {"timestamp":"2025-07-10T04:46:29.713Z","sessionId":"x69HqFWaWLEVIwjz8ibGaI-xG-I2YcYC","event":"query_completed","data":{"responseTime":6188,"responseLength":34,"userEmail":"ics.learning.ashoka@gmail.com","threadId":"thread_FWvaItUzOCvB4xOo6On4x1lJ"}}
+{"timestamp":"2025-07-10T05:24:49.289Z","sessionId":"dKVJiMJv5QGSBwPA0d5JnYlYs7AtIo0S","event":"query_received","data":{"promptLength":9,"userEmail":"ics.learning.ashoka@gmail.com","threadId":"thread_pH6ZeMEakhruVrQBGsNBb1bM"}}
+{"timestamp":"2025-07-10T05:24:57.004Z","sessionId":"dKVJiMJv5QGSBwPA0d5JnYlYs7AtIo0S","event":"query_completed","data":{"responseTime":7712,"responseLength":34,"userEmail":"ics.learning.ashoka@gmail.com","threadId":"thread_pH6ZeMEakhruVrQBGsNBb1bM"}}

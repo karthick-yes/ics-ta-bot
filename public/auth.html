@@ -121,9 +121,12 @@
                 const data = await response.json();
                 
                 if (response.ok) {
+                    // *** FIX: Store the token in localStorage before redirecting ***
+                    localStorage.setItem('authToken', data.token);
+                    
                     showMessage('Authentication successful! Redirecting...', 'success');
                     setTimeout(() => {
-                        window.location.href = '/';
+                        window.location.href = '/'; // Redirect to the main chat page
                     }, 1500);
                 } else {
                     showMessage(data.error, 'error');

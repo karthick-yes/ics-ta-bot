@@ -3,16 +3,44 @@ document.addEventListener('DOMContentLoaded', function() {
     const questionInput = document.getElementById('questionInput');
     const chatContainer = document.getElementById('chatContainer');
     const charCounter = document.getElementById('charCounter');
-    
+    const logoutButton = document.getElementById('logoutButton'); // Get logout button
+
     let threadId = null;
+    // *** FIX: Get the token from localStorage ***
+    const token = localStorage.getItem('authToken');
+
+    // *** FIX: Define headers to be reused in fetch calls ***
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+    };
 
     // Initialize the session and get a threadId
     async function initializeSession() {
+        // *** FIX: If no token exists, redirect to login page immediately ***
+        if (!token) {
+            window.location.href = '/auth.html';
+            return;
+        }
+
         try {
-            const response = await fetch('/api/start', { method: 'POST' });
+            // *** FIX: Send the Authorization header with the request ***
+            const response = await fetch('/api/start', {
+                method: 'POST',
+                headers: headers
+            });
+            
+            if (response.status === 401) {
+                // If token is invalid/expired, clear it and redirect
+                localStorage.removeItem('authToken');
+                window.location.href = '/auth.html';
+                return;
+            }
+
             if (!response.ok) {
                 throw new Error('Failed to start session');
             }
+
             const data = await response.json();
             threadId = data.threadId;
             askButton.disabled = false;
@@ -24,6 +52,12 @@ document.addEventListener('DOMContentLoaded', function() {
             questionInput.disabled = true;
         }
     }
+    
+    function logout() {
+        localStorage.removeItem('authToken'); // Clear the token
+        window.location.href = '/auth.html'; // Redirect to login
+    }
+
 
     // Auto-resize textarea
     questionInput.addEventListener('input', function() {
@@ -36,6 +70,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     askButton.addEventListener('click', handleQuery);
+    logoutButton.addEventListener('click', logout); // Attach logout event
+    
     questionInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter' && !e.shiftKey && !askButton.disabled) {
             e.preventDefault();
@@ -53,12 +89,13 @@ document.addEventListener('DOMContentLoaded', function() {
         questionInput.style.height = 'auto'; // Reset height
 
         try {
+            // *** FIX: Send the Authorization header with the request ***
             const response = await fetch('/api/query', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: headers, // Use the predefined headers
                 body: JSON.stringify({ 
                     prompt: prompt,
-                    threadId: threadId // Send threadId with the request
+                    threadId: threadId
                 })
             });
 
@@ -88,7 +125,6 @@ document.addEventListener('DOMContentLoaded', function() {
         messageDiv.appendChild(roleSpan);
     
         const content = document.createElement("div");
-        // Sanitize and render markdown for bot messages
         content.innerHTML = (role === "assistant") ? marked.parse(text) : text;
         
         messageDiv.appendChild(content);
