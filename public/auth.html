@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICS TA Bot - Login</title>
+    <style>
+        /* Add your styles here */
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+        .success {
+            color: green;
+            margin-top: 10px;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h2>ICS TA Bot Login</h2>
+    
+    <div id="email-form">
+        <div class="form-group">
+            <input type="email" id="email" placeholder="Enter your email" required>
+        </div>
+        <button onclick="requestVerification()">Send Verification Code</button>
+    </div>
+    
+    <div id="verification-form" class="hidden">
+        <div class="form-group">
+            <input type="text" id="verification-code" placeholder="Enter verification code" required>
+        </div>
+        <button onclick="verifyCode()">Verify</button>
+    </div>
+    
+    <div id="message"></div>
+
+    <script>
+        let currentEmail = '';
+
+        async function requestVerification() {
+            const email = document.getElementById('email').value;
+            
+            if (!email) {
+                showMessage('Please enter your email', 'error');
+                return;
+            }
+            
+            currentEmail = email;
+            
+            try {
+                const response = await fetch('/api/auth/request-verification', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showMessage(data.message, 'success');
+                    document.getElementById('email-form').classList.add('hidden');
+                    document.getElementById('verification-form').classList.remove('hidden');
+                } else {
+                    showMessage(data.error, 'error');
+                }
+            } catch (error) {
+                showMessage('Network error. Please try again.', 'error');
+            }
+        }
+
+        async function verifyCode() {
+            const code = document.getElementById('verification-code').value;
+            
+            if (!code) {
+                showMessage('Please enter the verification code', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/auth/verify', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email: currentEmail, code })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showMessage('Authentication successful! Redirecting...', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 1500);
+                } else {
+                    showMessage(data.error, 'error');
+                }
+            } catch (error) {
+                showMessage('Network error. Please try again.', 'error');
+            }
+        }
+
+        function showMessage(message, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = message;
+            messageDiv.className = type;
+        }
+    </script>
+</body>
+</html>
