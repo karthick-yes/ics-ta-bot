@@ -7,6 +7,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { Logger } from './logger.js';
 import { callOpenAI, createThread } from './services/openaiService.js';
+import { GeminiService} from './services/geminiService.js';
 import authService from './services/authService.js';
 import { requireAuth, requireAdmin } from './middleware/authMiddleware.js';
 import { 
@@ -25,6 +26,8 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 const logger = new Logger();
+
+const geminiService = new GeminiService();
 
 // Middleware
 app.use(express.static(path.join(__dirname, 'public')));
@@ -195,40 +198,65 @@ app.get('/', (req, res) => {
     }
 });
 
-// Protected API endpoint to start a new chat session
 app.post('/api/start', requireAuth, async (req, res) => {
     const start = Date.now();
+    const { model = 'gemini' } = req.body; 
     
     try {
         const userEmail = req.user.email;
-        let threadId = req.session.threadId;
         
-        // If no thread in session, create a new one
-        if (!threadId) {
-            const thread = await createThread();
-            threadId = thread.id;
-            req.session.threadId = threadId;
+        if (model === 'chatgpt') {
+            let threadId = req.session.threadId;
             
-            logger.info('New thread created for authenticated user', { 
+            if (!threadId) {
+                const thread = await createThread();
+                threadId = thread.id;
+                req.session.threadId = threadId;
+                
+                logger.info('New OpenAI thread created', { 
+                    threadId: threadId, 
+                    userEmail: userEmail,
+                    sessionId: req.session.id 
+                });
+            }
+            
+            activeThreads.inc();
+            const duration = (Date.now() - start) / 1000;
+            openaiRequestsTotal.labels('success').inc();
+            openaiRequestDuration.observe(duration);
+            
+            res.json({ 
                 threadId: threadId, 
+                model: 'chatgpt',
+                message: 'ChatGPT session initialized' 
+            });
+            
+        } else {
+            // Gemini logic - use session-based history
+            req.session.chatHistory = []; // Initialize empty history
+            req.session.selectedModel = 'gemini';
+            
+            logger.info('New Gemini session created', { 
                 userEmail: userEmail,
                 sessionId: req.session.id 
             });
+            
+            res.json({ 
+                sessionId: req.session.id,
+                model: 'gemini',
+                message: 'Gemini session initialized' 
+            });
         }
         
-        // Update metrics
-        activeThreads.inc();
-        const duration = (Date.now() - start) / 1000;
-        openaiRequestsTotal.labels('success').inc();
-        openaiRequestDuration.observe(duration);
-        
-        res.json({ threadId: threadId });
     } catch (error) {
-        openaiRequestsTotal.labels('error').inc();
-        logger.error('Failed to create OpenAI thread', { 
+        if (model === 'chatgpt') {
+            openaiRequestsTotal.labels('error').inc();
+        }
+        logger.error('Failed to create session', { 
             error: error.message, 
             stack: error.stack,
-            userEmail: req.user.email 
+            userEmail: req.user.email,
+            model: model 
         });
         res.status(500).json({ error: 'Could not start a new session.' });
     }
@@ -239,36 +267,22 @@ app.post('/api/query', requireAuth, async (req, res) => {
     const startTime = Date.now();
     const sessionId = req.session.id;
     const userEmail = req.user.email;
-    const threadId = req.body.threadId || req.session.threadId;
-
-    if (!threadId) {
-        logger.warn('Query received without a threadId from authenticated user', { 
-            sessionId, 
-            userEmail 
-        });
-        return res.status(400).json({ error: 'Session not initialized. Please start a new conversation.' });
-    }
+    const { prompt, model = 'gemini' } = req.body;
 
     try {
-        const { prompt } = req.body;
-
-        // Enhanced logging with user info
         logger.logMetrics(sessionId, 'query_received', { 
             promptLength: prompt.length,
             userEmail: userEmail,
-            threadId: threadId
+            model: model
         });
 
         if (!prompt || prompt.trim().length === 0) {
-            logger.warn('Empty prompt received from authenticated user', { 
-                sessionId, 
-                userEmail 
-            });
+            logger.warn('Empty prompt received', { sessionId, userEmail });
             return res.status(400).json({ error: 'Prompt cannot be empty' });
         }
         
         if (prompt.length > 2000) {
-            logger.warn('Prompt too long from authenticated user', { 
+            logger.warn('Prompt too long', { 
                 sessionId, 
                 userEmail,
                 promptLength: prompt.length 
@@ -278,50 +292,162 @@ app.post('/api/query', requireAuth, async (req, res) => {
 
         if (containsInappropriateContent(prompt)) {
             inappropriateContentBlocked.inc();
-            logger.warn('Inappropriate content detected from authenticated user', { 
+            logger.warn('Inappropriate content detected', { 
                 sessionId, 
                 userEmail,
-                prompt 
+                prompt,
+                model: model
             });
             const warningMessage = "I can only help with learning ICS concepts. Please ask questions related to computer science, programming, or course material. I won't provide direct answers to homework or exams.";
             return res.status(403).json({ message: warningMessage });
         }
 
-        const aiResponse = await callOpenAI(prompt, threadId);
+        let aiResponse;
         const responseTime = Date.now() - startTime;
 
-        // Update metrics
-        openaiRequestsTotal.labels('success').inc();
-        openaiRequestDuration.observe(responseTime / 1000);
+        if (model === 'chatgpt') {
+            // OpenAI ChatGPT logic
+            const threadId = req.body.threadId || req.session.threadId;
+            if (!threadId) {
+                return res.status(400).json({ error: 'ChatGPT session not initialized. Please start a new conversation.' });
+            }
+            
+            aiResponse = await callOpenAI(prompt, threadId);
+            openaiRequestsTotal.labels('success').inc();
+            openaiRequestDuration.observe(responseTime / 1000);
+            
+        } else {
+            // Gemini logic
+            const chatHistory = req.session.chatHistory || [];
+            
+            const result = await geminiService.sendMessage(prompt, chatHistory);
+            aiResponse = result.response;
+            
+            // Update session with new history
+            req.session.chatHistory = result.updatedHistory;
+        }
 
-        // Enhanced logging with user info
-        logger.logInteraction(sessionId, prompt, aiResponse, process.env.OPENAI_ASSISTANT_ID, responseTime);
+        logger.logInteraction(sessionId, prompt, aiResponse, model, responseTime);
         logger.logMetrics(sessionId, 'query_completed', { 
             responseTime, 
             responseLength: aiResponse.length,
             userEmail: userEmail,
-            threadId: threadId
+            model: model
         });
 
-        res.json({ message: aiResponse });
+        res.json({ 
+            message: aiResponse,
+            model: model
+        });
 
     } catch (error) {
         const responseTime = Date.now() - startTime;
-        openaiRequestsTotal.labels('error').inc();
-        logger.error('Error processing query from authenticated user', { 
+        if (model === 'chatgpt') {
+            openaiRequestsTotal.labels('error').inc();
+        }
+        
+        logger.error('Error processing query', { 
             error: error.message, 
             stack: error.stack, 
             sessionId,
-            userEmail: userEmail
+            userEmail: userEmail,
+            model: model
         });
-        logger.logInteraction(sessionId, req.body.prompt, null, process.env.OPENAI_ASSISTANT_ID, responseTime, error.message);
+        
+        logger.logInteraction(sessionId, prompt, null, model, responseTime, error.message);
         logger.logMetrics(sessionId, 'query_failed', { 
             responseTime,
-            userEmail: userEmail
+            userEmail: userEmail,
+            model: model
         });
+        
         res.status(500).json({ error: 'An error occurred while processing your request.' });
     }
 });
+
+app.post('/api/switch-model', requireAuth, async (req, res) => {
+    const { model } = req.body;
+    const userEmail = req.user.email;
+    
+    if (!model || !['chatgpt', 'gemini'].includes(model)) {
+        return res.status(400).json({ error: 'Invalid model. Must be "chatgpt" or "gemini"' });
+    }
+    
+    try {
+        // Clear previous session data
+        if (req.session.threadId) {
+            delete req.session.threadId;
+        }
+        if (req.session.chatHistory) {
+            delete req.session.chatHistory;
+        }
+        
+        req.session.selectedModel = model;
+        
+        logger.info('Model switched', { 
+            userEmail: userEmail,
+            newModel: model,
+            sessionId: req.session.id 
+        });
+        
+        res.json({ 
+            message: `Switched to ${model}`,
+            model: model 
+        });
+        
+    } catch (error) {
+        logger.error('Error switching model', { 
+            error: error.message,
+            userEmail: userEmail,
+            model: model 
+        });
+        res.status(500).json({ error: 'Failed to switch model' });
+    }
+});
+
+// Endpoint to get chat history (for Gemini)
+app.get('/api/history', requireAuth, (req, res) => {
+    try {
+        const chatHistory = req.session.chatHistory || [];
+        const model = req.session.selectedModel || 'gemini';
+        
+        res.json({ 
+            history: geminiService.formatHistoryForStorage(chatHistory),
+            model: model,
+            summary: geminiService.getConversationSummary(chatHistory)
+        });
+    } catch (error) {
+        logger.error('Error retrieving chat history', { 
+            error: error.message,
+            userEmail: req.user.email 
+        });
+        res.status(500).json({ error: 'Failed to retrieve chat history' });
+    }
+});
+
+// Endpoint to clear chat history
+app.post('/api/clear-history', requireAuth, (req, res) => {
+    try {
+        req.session.chatHistory = [];
+        if (req.session.threadId) {
+            delete req.session.threadId;
+        }
+        
+        logger.info('Chat history cleared', { 
+            userEmail: req.user.email,
+            sessionId: req.session.id 
+        });
+        
+        res.json({ message: 'Chat history cleared' });
+    } catch (error) {
+        logger.error('Error clearing chat history', { 
+            error: error.message,
+            userEmail: req.user.email 
+        });
+        res.status(500).json({ error: 'Failed to clear chat history' });
+    }
+});
+
 
 // Prometheus metrics endpoint
 app.get('/metrics', async (req, res) => {
@@ -369,4 +495,6 @@ app.listen(PORT, () => {
     logger.info(`Server is running on http://localhost:${PORT}`);
     logger.info(`Prometheus metrics available at http://localhost:${PORT}/metrics`);
     logger.info(`Authentication required - visit http://localhost:${PORT}/auth.html to login`);
+    logger.info(`Supported AI models: ChatGPT, Gemini (default: Gemini)`);
+
 });

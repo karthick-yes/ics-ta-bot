@@ -11,13 +11,32 @@
 <body class="d-flex flex-column min-vh-100">
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" href="#">ICS TA Bot</a>
-        <div class="ml-auto">
-            <button id="logoutButton" class="btn btn-outline-light">Logout</button>
+        <a class="navbar-brand" href="#">
+            <strong>ICS TA Bot</strong>
+        </a>
+        <div class="navbar-nav mr-auto">
+            <div class="nav-item">
+                <div class="model-selector-container d-flex align-items-center">
+                    <label for="modelSelect" class="text-light mr-2 mb-0">AI Model:</label>
+                    <select id="modelSelect" class="form-control form-control-sm" style="width: auto;">
+                        <option value="gemini">Gemini (Default)</option>
+                        <option value="chatgpt"> ChatGPT</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="ml-auto d-flex align-items-center">
+            <small class="text-light mr-3" id="sessionInfo">Ready to Assist...</small>
+            <button id="clearHistoryButton" class="btn btn-outline-warning btn-sm mr-2" title="Clear chat history (Ctrl+K)">
+                Clear Chat
+            </button>
+            <button id="logoutButton" class="btn btn-outline-light btn-sm">Logout</button>
         </div>
     </nav>
 
     <div class="container flex-grow-1 d-flex flex-column pt-4" id="chat-window">
+        <!-- Model info and connection status will be inserted here by JavaScript -->
+        
         <div id="chatContainer" class="flex-grow-1">
             <div class="message bot">
                 <span class="role">assistant</span>
@@ -26,21 +45,178 @@
         </div>
         
         <div class="input-group my-3">
-            <textarea id="questionInput" class="form-control" placeholder="Ask an ICS-related question..." maxlength="2000" rows="1"></textarea>
+            <textarea 
+                id="questionInput" 
+                class="form-control" 
+                placeholder="Ask an ICS-related question..." 
+                maxlength="2000" 
+                rows="1"
+                disabled
+            ></textarea>
             <div class="input-group-append">
-                <button id="askButton" class="btn btn-primary">Ask</button>
+                <button id="askButton" class="btn btn-primary" disabled>
+                    Initializing...
+                </button>
             </div>
         </div>
         
-        <div id="charCounter" class="text-muted small text-center mb-2">
-            2000 characters remaining
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <div id="charCounter" class="text-muted small">
+                2000 characters remaining
+            </div>
+            <div class="text-muted small">
+                Press <kbd style="color :aqua;">Enter</kbd> to send, <kbd style="color: aqua;">Shift+Enter</kbd> for new line
+            </div>
         </div>
     </div>
 
     <footer class="bg-dark text-light text-center p-3 mt-auto">
-        <p>Made in 2025 by ICS Team</p>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 text-md-left">
+                    <p class="mb-1">Made in 2025 by Karthik</p>
+                </div>
+                <div class="col-md-6 text-md-right">
+                    <p class="mb-1 small">
+                        <span class="text-muted">AI Models</span> 
+                        <span id="footerModelInfo">Gemini & ChatGPT</span>
+                    </p>
+                </div>
+            </div>
+        </div>
     </footer>
 
+    <!-- Loading Modal -->
+    <div class="modal fade" id="loadingModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-body text-center py-4">
+                    <div class="spinner-border text-primary mb-3" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <p class="mb-0">Switching AI model...</p>
+                    <small class="text-muted">This may take a moment</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="scripts.js"></script>
+    
+    <!-- Custom styles for model selection -->
+    <style>
+        .model-selector-container {
+            background: rgba(255,255,255,0.1);
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin-left: 15px;
+        }
+        
+        .model-indicator {
+            font-style: italic;
+            color: #6c757d !important;
+        }
+        
+        #sessionInfo {
+            font-family: 'Courier New', monospace;
+            background: rgba(40, 167, 69, 0.2);
+            padding: 2px 8px;
+            border-radius: 3px;
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+        
+        .message.bot {
+            position: relative;
+        }
+        
+        .message.bot::after {
+            content: attr(data-model);
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            font-size: 0.7em;
+            color: #6c757d;
+            font-style: italic;
+        }
+        
+        kbd {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 3px;
+            padding: 2px 4px;
+            font-size: 0.8em;
+        }
+        
+        .alert-info {
+            background-color: rgba(23, 162, 184, 0.1);
+            border-color: rgba(23, 162, 184, 0.2);
+        }
+        
+        .connection-status {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        
+        .connection-status.online {
+            background-color: #28a745;
+            box-shadow: 0 0 3px #28a745;
+        }
+        
+        .connection-status.offline {
+            background-color: #dc3545;
+            box-shadow: 0 0 3px #dc3545;
+        }
+        
+        /* Improve textarea appearance */
+        #questionInput {
+            resize: none;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+        
+        #questionInput:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+        
+        /* Model switching animation */
+        .model-switching {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        
+        .model-switching .message {
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 0.8; }
+            100% { opacity: 0.6; }
+        }
+        
+        /* Responsive improvements */
+        @media (max-width: 768px) {
+            .model-selector-container {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+            
+            .navbar-nav {
+                width: 100%;
+            }
+            
+            .ml-auto {
+                margin-top: 10px !important;
+                margin-left: 0 !important;
+            }
+            
+            #sessionInfo {
+                display: none;
+            }
+        }
+    </style>
 </body>
 </html>
