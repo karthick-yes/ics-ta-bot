@@ -5,44 +5,267 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ICS TA Bot</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="styles.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        :root {
+            --bg-main: #f8f9fa;
+            --bg-card: #ffffff;
+            --text-main: #212529;
+            --text-muted: #6c757d;
+            --primary: #007bff;
+            --primary-dark: #0056b3;
+            --accent: #28a745;
+            --danger: #dc3545;
+            --border: #dee2e6;
+            --bot-message-bg: #e9ecef;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.5;
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .navbar-brand {
+            color: var(--text-main);
+            font-weight: 700;
+        }
+
+        #logoutButton {
+            color: var(--danger);
+            border-color: var(--danger);
+        }
+
+        #logoutButton:hover {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        #clearChatButton {
+            color: var(--text-main);
+            border-color: var(--border);
+        }
+
+        #clearChatButton:hover {
+            background-color: #e2e6ea;
+            border-color: #dae0e5;
+        }
+
+        #chat-window {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        #chatContainer {
+            flex: 1;
+            background-color: var(--bg-card);
+            padding: 20px;
+            border-radius: 10px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+            max-height: calc(100% - 150px);
+            display: flex;
+            flex-direction: column;
+            gap: 15px; /* Adds space between messages */
+        }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: 12px;
+            max-width: 80%;
+            width: fit-content;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .message.bot {
+            background-color: var(--bot-message-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            align-self: flex-start;
+        }
+
+        .message.user {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            align-self: flex-end;
+        }
+
+        .role {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+
+        .input-group {
+            margin-top: 15px;
+        }
+
+        #questionInput {
+            min-height: 44px;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            font-size: 1rem;
+            resize: vertical;
+            max-height: 120px;
+            transition: border-color 0.15s ease-in-out;
+        }
+
+        #questionInput:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        #askButton {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            transition: background-color 0.3s ease;
+        }
+
+        #askButton:hover:not(:disabled) {
+            background-color: var(--primary-dark);
+        }
+
+        #askButton:disabled {
+            background-color: #a0aec0;
+            cursor: not-allowed;
+        }
+
+        #charCounter {
+            margin-top: 8px;
+            font-size: 12px;
+            color: var(--text-muted);
+            text-align: right;
+        }
+
+        kbd {
+            background-color: #e9ecef;
+            border: 1px solid #ced4da;
+            border-radius: 3px;
+            padding: 2px 4px;
+            font-size: 0.8em;
+            color: #495057;
+        }
+        
+        footer {
+            background-color: transparent;
+            padding: 1rem;
+            text-align: center;
+            flex-shrink: 0;
+            color: var(--text-muted);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1050;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .modal-content {
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            width: 80%;
+            max-width: 500px;
+            position: relative;
+        }
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+        }
+        #feedbackInput {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            width: 100%;
+            min-height: 100px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            padding: 8px;
+        }
+        #submitFeedback {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #submitFeedback:hover {
+            opacity: 0.9;
+        }
+
+        #feedbackButton {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: background-color 0.3s ease;
+        }
+        #feedbackButton:hover {
+            background-color: #218838;
+        }
+    </style>
 </head>
 <body class="d-flex flex-column min-vh-100">
-
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-light">
         <a class="navbar-brand" href="#">
             <strong>ICS TA Bot</strong>
         </a>
-        <div class="navbar-nav mr-auto">
-            <div class="nav-item">
-                <div class="model-selector-container d-flex align-items-center">
-                    <label for="modelSelect" class="text-light mr-2 mb-0">AI Model:</label>
-                    <select id="modelSelect" class="form-control form-control-sm" style="width: auto;">
-                        <option value="gemini">Gemini (Default)</option>
-                        <option value="chatgpt"> ChatGPT</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-        <div class="ml-auto d-flex align-items-center">
-            <small class="text-light mr-3" id="sessionInfo">Ready to Assist...</small>
-            <button id="clearHistoryButton" class="btn btn-outline-warning btn-sm mr-2" title="Clear chat history (Ctrl+K)">
+        <div class="ml-auto">
+            <button id="clearChatButton" class="btn btn-sm mr-2" title="Clear chat history (Ctrl+K)">
                 Clear Chat
             </button>
-            <button id="logoutButton" class="btn btn-outline-light btn-sm">Logout</button>
+            <button id="logoutButton" class="btn btn-outline-danger btn-sm">Logout</button>
         </div>
     </nav>
 
     <div class="container flex-grow-1 d-flex flex-column pt-4" id="chat-window">
-        <!-- Model info and connection status will be inserted here by JavaScript -->
-        
-        <div id="chatContainer" class="flex-grow-1">
-            <div class="message bot">
-                <span class="role">assistant</span>
-                <div>I am the ICS TA Bot, designed to help you learn computer science concepts. I provide step-by-step guidance rather than direct answers. My responses are focused on ICS topics to encourage critical thinking.</div>
+        <div id="chatContainer">
             </div>
-        </div>
         
         <div class="input-group my-3">
             <textarea 
@@ -51,172 +274,43 @@
                 placeholder="Ask an ICS-related question..." 
                 maxlength="2000" 
                 rows="1"
-                disabled
             ></textarea>
             <div class="input-group-append">
-                <button id="askButton" class="btn btn-primary" disabled>
-                    Initializing...
+                <button id="askButton" class="btn btn-primary">
+                    Ask
                 </button>
             </div>
         </div>
         
         <div class="d-flex justify-content-between align-items-center mb-2">
+            <div>
+                 <button id="feedbackButton">Submit Feedback</button>
+            </div>
             <div id="charCounter" class="text-muted small">
                 2000 characters remaining
             </div>
-            <div class="text-muted small">
-                Press <kbd style="color :aqua;">Enter</kbd> to send, <kbd style="color: aqua;">Shift+Enter</kbd> for new line
-            </div>
+        </div>
+        <div class="text-muted small text-right">
+            Press <kbd>Enter</kbd> to send, <kbd>Shift+Enter</kbd> for new line
         </div>
     </div>
 
-    <footer class="bg-dark text-light text-center p-3 mt-auto">
+    <footer class="text-center p-3 mt-auto">
         <div class="container">
-            <div class="row">
-                <div class="col-md-6 text-md-left">
-                    <p class="mb-1">Made in 2025 by Karthik</p>
-                </div>
-                <div class="col-md-6 text-md-right">
-                    <p class="mb-1 small">
-                        <span class="text-muted">AI Models</span> 
-                        <span id="footerModelInfo">Gemini & ChatGPT</span>
-                    </p>
-                </div>
-            </div>
+            <p class="mb-0">Made in 2025 by Karthik</p>
         </div>
     </footer>
-
-    <!-- Loading Modal -->
-    <div class="modal fade" id="loadingModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-body text-center py-4">
-                    <div class="spinner-border text-primary mb-3" role="status">
-                        <span class="sr-only">Loading...</span>
-                    </div>
-                    <p class="mb-0">Switching AI model...</p>
-                    <small class="text-muted">This may take a moment</small>
-                </div>
-            </div>
+    
+    <div id="feedbackModal" class="modal">
+        <div class="modal-content">
+            <span id="closeModal" class="close-button">&times;</span>
+            <h2>Submit Feedback</h2>
+            <p>Your feedback is valuable for improving this tool.</p>
+            <textarea id="feedbackInput" placeholder="Enter your feedback here..."></textarea>
+            <button id="submitFeedback">Submit Feedback</button>
         </div>
     </div>
 
     <script src="scripts.js"></script>
-    
-    <!-- Custom styles for model selection -->
-    <style>
-        .model-selector-container {
-            background: rgba(255,255,255,0.1);
-            padding: 5px 10px;
-            border-radius: 5px;
-            margin-left: 15px;
-        }
-        
-        .model-indicator {
-            font-style: italic;
-            color: #6c757d !important;
-        }
-        
-        #sessionInfo {
-            font-family: 'Courier New', monospace;
-            background: rgba(40, 167, 69, 0.2);
-            padding: 2px 8px;
-            border-radius: 3px;
-            border: 1px solid rgba(40, 167, 69, 0.3);
-        }
-        
-        .message.bot {
-            position: relative;
-        }
-        
-        .message.bot::after {
-            content: attr(data-model);
-            position: absolute;
-            top: 5px;
-            right: 10px;
-            font-size: 0.7em;
-            color: #6c757d;
-            font-style: italic;
-        }
-        
-        kbd {
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 3px;
-            padding: 2px 4px;
-            font-size: 0.8em;
-        }
-        
-        .alert-info {
-            background-color: rgba(23, 162, 184, 0.1);
-            border-color: rgba(23, 162, 184, 0.2);
-        }
-        
-        .connection-status {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            margin-right: 5px;
-        }
-        
-        .connection-status.online {
-            background-color: #28a745;
-            box-shadow: 0 0 3px #28a745;
-        }
-        
-        .connection-status.offline {
-            background-color: #dc3545;
-            box-shadow: 0 0 3px #dc3545;
-        }
-        
-        /* Improve textarea appearance */
-        #questionInput {
-            resize: none;
-            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-        }
-        
-        #questionInput:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-        }
-        
-        /* Model switching animation */
-        .model-switching {
-            opacity: 0.6;
-            pointer-events: none;
-        }
-        
-        .model-switching .message {
-            animation: pulse 1.5s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { opacity: 0.6; }
-            50% { opacity: 0.8; }
-            100% { opacity: 0.6; }
-        }
-        
-        /* Responsive improvements */
-        @media (max-width: 768px) {
-            .model-selector-container {
-                margin-left: 0;
-                margin-top: 10px;
-            }
-            
-            .navbar-nav {
-                width: 100%;
-            }
-            
-            .ml-auto {
-                margin-top: 10px !important;
-                margin-left: 0 !important;
-            }
-            
-            #sessionInfo {
-                display: none;
-            }
-        }
-    </style>
 </body>
 </html>

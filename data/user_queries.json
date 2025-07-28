@@ -1,0 +1,274 @@
+{
+  "ics.learning.ashoka@gmail.com": {
+    "2025-07-27": {
+      "count": 10,
+      "lastQuery": "2025-07-27T14:35:52.534Z",
+      "queries": [
+        {
+          "timestamp": "2025-07-27T14:03:03.268Z",
+          "prompt": "hi how are you",
+          "responseLength": 82
+        },
+        {
+          "timestamp": "2025-07-27T14:09:40.224Z",
+          "prompt": "do you know anything about the coursee?",
+          "responseLength": 356
+        },
+        {
+          "timestamp": "2025-07-27T14:10:04.957Z",
+          "prompt": "could you give me an overall summary of this like how ti works esoecially about the course",
+          "responseLength": 1032
+        },
+        {
+          "timestamp": "2025-07-27T14:16:13.687Z",
+          "prompt": "hii",
+          "responseLength": 49
+        },
+        {
+          "timestamp": "2025-07-27T14:22:17.826Z",
+          "prompt": "hi what is up",
+          "responseLength": 86
+        },
+        {
+          "timestamp": "2025-07-27T14:22:35.876Z",
+          "prompt": "tell me how the assignments are graded?",
+          "responseLength": 285
+        },
+        {
+          "timestamp": "2025-07-27T14:22:55.006Z",
+          "prompt": "where did you get this information from ??",
+          "responseLength": 198
+        },
+        {
+          "timestamp": "2025-07-27T14:28:14.628Z",
+          "prompt": "teach me what you know about recursion",
+          "responseLength": 1010
+        },
+        {
+          "timestamp": "2025-07-27T14:32:08.868Z",
+          "prompt": "helloo hi hi hi",
+          "responseLength": 49
+        },
+        {
+          "timestamp": "2025-07-27T14:35:52.534Z",
+          "prompt": "you are crazy bro",
+          "responseLength": 150
+        }
+      ]
+    },
+    "2025-07-28": {
+      "count": 25,
+      "lastQuery": "2025-07-28T11:44:46.726Z",
+      "queries": [
+        {
+          "timestamp": "2025-07-28T10:56:31.545Z",
+          "prompt": "hi",
+          "responseLength": 163
+        },
+        {
+          "timestamp": "2025-07-28T11:00:51.538Z",
+          "prompt": "hi there",
+          "responseLength": 89
+        },
+        {
+          "timestamp": "2025-07-28T11:01:01.337Z",
+          "prompt": "how are you doing",
+          "responseLength": 117
+        },
+        {
+          "timestamp": "2025-07-28T11:04:26.217Z",
+          "prompt": "hi",
+          "responseLength": 56
+        },
+        {
+          "timestamp": "2025-07-28T11:06:20.443Z",
+          "prompt": "hi there",
+          "responseLength": 187
+        },
+        {
+          "timestamp": "2025-07-28T11:06:24.950Z",
+          "prompt": "what is up",
+          "responseLength": 209
+        },
+        {
+          "timestamp": "2025-07-28T11:06:32.425Z",
+          "prompt": "are you doing good",
+          "responseLength": 252
+        },
+        {
+          "timestamp": "2025-07-28T11:10:05.733Z",
+          "prompt": "hi",
+          "responseLength": 66
+        },
+        {
+          "timestamp": "2025-07-28T11:10:53.569Z",
+          "prompt": "sijldjsldgjlsdjlgjsdljgsjdlgkjaslkjalksjflkajslkfjalksjlkasjlkjkldsfj\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\njfaskljfdlasldfjalksd",
+          "responseLength": 73
+        },
+        {
+          "timestamp": "2025-07-28T11:13:30.191Z",
+          "prompt": "hii",
+          "responseLength": 49
+        },
+        {
+          "timestamp": "2025-07-28T11:17:04.098Z",
+          "prompt": "hi there",
+          "responseLength": 162
+        },
+        {
+          "timestamp": "2025-07-28T11:17:17.751Z",
+          "prompt": "aljsfdhlasdflajslkdfjalksjdflkasjdflkjaslkfdjalkj\n\n\n\n\nJflajsldfj\n\n\n\n\n{fklasjlfdjasd",
+          "responseLength": 227
+        },
+        {
+          "timestamp": "2025-07-28T11:36:35.159Z",
+          "prompt": "hi there",
+          "responseLength": 89
+        },
+        {
+          "timestamp": "2025-07-28T11:36:41.835Z",
+          "prompt": "how are tou doing",
+          "responseLength": 118
+        },
+        {
+          "timestamp": "2025-07-28T11:37:04.670Z",
+          "prompt": "hoiashdiofasdf",
+          "responseLength": 137
+        },
+        {
+          "timestamp": "2025-07-28T11:39:37.744Z",
+          "prompt": "hi thre",
+          "responseLength": 49
+        },
+        {
+          "timestamp": "2025-07-28T11:39:44.287Z",
+          "prompt": "what is up with you",
+          "responseLength": 213
+        },
+        {
+          "timestamp": "2025-07-28T11:39:57.279Z",
+          "prompt": "cool teach me the basic syntax of ocmal",
+          "responseLength": 1577
+        },
+        {
+          "timestamp": "2025-07-28T11:40:24.014Z",
+          "prompt": "give me a code snippet teaching basic syntax of ocaml",
+          "responseLength": 1418
+        },
+        {
+          "timestamp": "2025-07-28T11:44:46.726Z",
+          "prompt": "hi there who is the current TA of th course?",
+          "responseLength": 197
+        }
+      ]
+    }
+  },
+  "karthiksunil074@gmail.com": {
+    "2025-07-28": {
+      "count": 43,
+      "lastQuery": "2025-07-28T12:36:05.017Z",
+      "queries": [
+        {
+          "timestamp": "2025-07-28T12:09:56.202Z",
+          "prompt": "how is that possible",
+          "responseLength": 173
+        },
+        {
+          "timestamp": "2025-07-28T12:11:23.644Z",
+          "prompt": "hi what do you know about the course",
+          "responseLength": 370
+        },
+        {
+          "timestamp": "2025-07-28T12:13:44.134Z",
+          "prompt": "give me all the information regarding teh coursee",
+          "responseLength": 162
+        },
+        {
+          "timestamp": "2025-07-28T12:14:54.974Z",
+          "prompt": "what are the lecture topics",
+          "responseLength": 162
+        },
+        {
+          "timestamp": "2025-07-28T12:15:43.013Z",
+          "prompt": "yea so I am asking what are the lecture topics of this course?",
+          "responseLength": 235
+        },
+        {
+          "timestamp": "2025-07-28T12:19:45.675Z",
+          "prompt": "do you know what a tail recursive function is",
+          "responseLength": 474
+        },
+        {
+          "timestamp": "2025-07-28T12:20:22.697Z",
+          "prompt": "do you have information about the lecture notes?",
+          "responseLength": 130
+        },
+        {
+          "timestamp": "2025-07-28T12:20:49.407Z",
+          "prompt": "how is insertion sort done in ocaml",
+          "responseLength": 567
+        },
+        {
+          "timestamp": "2025-07-28T12:26:26.854Z",
+          "prompt": "do you know anything about the resources and learning materials?",
+          "responseLength": 207
+        },
+        {
+          "timestamp": "2025-07-28T12:27:59.794Z",
+          "prompt": "what are the resources and learning materials that I have to use",
+          "responseLength": 640
+        },
+        {
+          "timestamp": "2025-07-28T12:28:40.351Z",
+          "prompt": "what are teh requried pre-course reading?",
+          "responseLength": 338
+        },
+        {
+          "timestamp": "2025-07-28T12:31:47.057Z",
+          "prompt": "what are the readings for this course?",
+          "responseLength": 508
+        },
+        {
+          "timestamp": "2025-07-28T12:33:57.257Z",
+          "prompt": "what do you know about the course outline and lectures?",
+          "responseLength": 890
+        },
+        {
+          "timestamp": "2025-07-28T12:34:23.852Z",
+          "prompt": "no what are the different modules in teh coursee",
+          "responseLength": 163
+        },
+        {
+          "timestamp": "2025-07-28T12:34:41.027Z",
+          "prompt": "give me more details nigga",
+          "responseLength": 109
+        },
+        {
+          "timestamp": "2025-07-28T12:34:56.575Z",
+          "prompt": "give me more details about the different modules",
+          "responseLength": 1070
+        },
+        {
+          "timestamp": "2025-07-28T12:35:15.586Z",
+          "prompt": "what are the frequently asked questions in this course",
+          "responseLength": 1203
+        },
+        {
+          "timestamp": "2025-07-28T12:35:31.290Z",
+          "prompt": "what are the reading materials in thsi course",
+          "responseLength": 240
+        },
+        {
+          "timestamp": "2025-07-28T12:35:46.195Z",
+          "prompt": "give me all the reading materials",
+          "responseLength": 177
+        },
+        {
+          "timestamp": "2025-07-28T12:36:05.017Z",
+          "prompt": "thats all? arent there any more",
+          "responseLength": 187
+        }
+      ]
+    }
+  }
+}

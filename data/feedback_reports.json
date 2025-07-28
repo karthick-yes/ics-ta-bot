@@ -1,0 +1,355 @@
+{
+  "reports": [
+    {
+      "id": "report_1753625034984_lu32gjc1m",
+      "timestamp": "2025-07-27T14:03:54.984Z",
+      "userEmail": "ics.learning.ashoka@gmail.com",
+      "attackType": "general_feedback",
+      "description": "what happened to this stuff",
+      "conversationHistory": [
+        {
+          "index": 1,
+          "role": "user",
+          "content": "hi how are you",
+          "timestamp": "2025-07-27T14:03:54.984Z"
+        },
+        {
+          "index": 2,
+          "role": "model",
+          "content": "Hi! I am doing well, thank you for asking. How can I help you with CS-1102 today?\n",
+          "timestamp": "2025-07-27T14:03:54.984Z"
+        }
+      ],
+      "status": "pending",
+      "priority": "low"
+    },
+    {
+      "id": "report_1753625420019_s5z93w7ud",
+      "timestamp": "2025-07-27T14:10:20.019Z",
+      "userEmail": "ics.learning.ashoka@gmail.com",
+      "attackType": "general_feedback",
+      "description": "null",
+      "conversationHistory": [
+        {
+          "index": 1,
+          "role": "user",
+          "content": "do you know anything about the coursee?",
+          "timestamp": "2025-07-27T14:10:20.019Z"
+        },
+        {
+          "index": 2,
+          "role": "model",
+          "content": "Yes, I do! This course appears to be an introduction to computer science (CS-1102). It includes lectures, in-class assessments every Friday, and take-home assignments. The grading emphasizes understanding and growth over optimizing for grades, with detailed feedback provided on assessments.\nIs there anything specific you'd like to know about the course?\n",
+          "timestamp": "2025-07-27T14:10:20.019Z"
+        },
+        {
+          "index": 3,
+          "role": "user",
+          "content": "could you give me an overall summary of this like how ti works esoecially about the course",
+          "timestamp": "2025-07-27T14:10:20.019Z"
+        },
+        {
+          "index": 4,
+          "role": "model",
+          "content": "Okay, here's a summary of how the course works:\n\n*   **Lectures:** There are lectures scheduled almost every day from July 7th to August 13th.\n*   **Assessments:** You'll have in-class assessments (likely quizzes or tests) every Friday.\n*   **Assignments:** There are 3 take-home assignments that encourage you to explore topics independently.\n*   **Final Exam:** There's a final, in-class, closed-book exam on August 14th.\n*   **Grading:** Assessments are 1/3 of your grade, assignments are 1/3, and the final exam is 1/3.\n*   **Support:** The university provides resources like the Office of Learning Support, Ashoka Center for Well-Being, and the Center for Writing and Communication.\n*   **Academic Integrity:** Be very careful to avoid plagiarism, including the use of AI, as it can result in failing the course.\n\nIn essence, the course involves regular lectures, frequent assessments, independent assignments, and a final exam, with a strong emphasis on academic integrity. Does this help you understand the course structure?\n",
+          "timestamp": "2025-07-27T14:10:20.019Z"
+        }
+      ],
+      "status": "pending",
+      "priority": "low"
+    },
+    {
+      "id": "report_1753625779992_xj8j3bmx7",
+      "timestamp": "2025-07-27T14:16:19.992Z",
+      "userEmail": "ics.learning.ashoka@gmail.com",
+      "attackType": "general_feedback",
+      "description": "nothing much",
+      "conversationHistory": [
+        {
+          "index": 1,
+          "role": "user",
+          "content": "hii",
+          "timestamp": "2025-07-27T14:16:19.993Z"
+        },
+        {
+          "index": 2,
+          "role": "model",
+          "content": "Hi there! How can I help you with CS-1102 today?",
+          "timestamp": "2025-07-27T14:16:19.993Z"
+        }
+      ],
+      "status": "pending",
+      "priority": "low"
+    },
+    {
+      "id": "report_1753626184954_myzabb246",
+      "timestamp": "2025-07-27T14:23:04.954Z",
+      "userEmail": "ics.learning.ashoka@gmail.com",
+      "attackType": "general_feedback",
+      "description": "what is up",
+      "conversationHistory": [
+        {
+          "index": 1,
+          "role": "user",
+          "content": "hi what is up",
+          "timestamp": "2025-07-27T14:23:04.954Z"
+        },
+        {
+          "index": 2,
+          "role": "model",
+          "content": "Hi there! I'm here to help you with your CS-1102 questions. How can I help you today?",
+          "timestamp": "2025-07-27T14:23:04.954Z"
+        },
+        {
+          "index": 3,
+          "role": "user",
+          "content": "tell me how the assignments are graded?",
+          "timestamp": "2025-07-27T14:23:04.954Z"
+        },
+        {
+          "index": 4,
+          "role": "model",
+          "content": "Assignments are not graded with points. Instead, you'll receive detailed feedback to help you improve your understanding and apply your knowledge more effectively. This feedback is aimed at helping you refine your understanding and improve your ability to apply knowledge effectively.",
+          "timestamp": "2025-07-27T14:23:04.954Z"
+        },
+        {
+          "index": 5,
+          "role": "user",
+          "content": "where did you get this information from ??",
+          "timestamp": "2025-07-27T14:23:04.954Z"
+        },
+        {
+          "index": 6,
+          "role": "model",
+          "content": "I accessed this information from the course website for CS-1102, Summer 2025, taught by Aalok Thakkar. I am designed to assist students in this course. Do you have any questions about the material?",
+          "timestamp": "2025-07-27T14:23:04.954Z"
+        }
+      ],
+      "status": "pending",
+      "priority": "low"
+    },
+    {
+      "id": "report_1753626954370_4urjjib1e",
+      "timestamp": "2025-07-27T14:35:54.370Z",
+      "userEmail": "ics.learning.ashoka@gmail.com",
+      "attackType": "general_feedback",
+      "description": "what is even this chatbot",
+      "conversationHistory": [
+        {
+          "index": 1,
+          "role": "user",
+          "content": "helloo hi hi hi",
+          "timestamp": "2025-07-27T14:35:54.370Z"
+        },
+        {
+          "index": 2,
+          "role": "model",
+          "content": "Hi there! How can I help you with CS-1102 today?",
+          "timestamp": "2025-07-27T14:35:54.370Z"
+        },
+        {
+          "index": 3,
+          "role": "user",
+          "content": "you are crazy bro",
+          "timestamp": "2025-07-27T14:35:54.370Z"
+        },
+        {
+          "index": 4,
+          "role": "model",
+          "content": "I'm here to help you with your CS-1102 coursework. Do you have any questions about the material, assignments, or anything else related to the course?",
+          "timestamp": "2025-07-27T14:35:54.370Z"
+        }
+      ],
+      "status": "pending",
+      "priority": "low"
+    },
+    {
+      "id": "report_1753698957760_r4l9nzddt",
+      "timestamp": "2025-07-28T10:35:57.760Z",
+      "userEmail": "ics.learning.ashoka@gmail.com",
+      "attackType": "general_feedback",
+      "description": "what is up",
+      "conversationHistory": [
+        {
+          "index": 1,
+          "role": "user",
+          "content": "hi",
+          "timestamp": "2025-07-28T10:35:57.761Z"
+        },
+        {
+          "index": 2,
+          "role": "model",
+          "content": "Hi there! Welcome to CS-1102! I'm here to help you with the course. Do you have any questions I can answer for you?",
+          "timestamp": "2025-07-28T10:35:57.761Z"
+        }
+      ],
+      "status": "pending",
+      "priority": "low"
+    },
+    {
+      "id": "report_1753699200305_b650td2am",
+      "timestamp": "2025-07-28T10:40:00.306Z",
+      "userEmail": "karthiksunil074@gmail.com",
+      "attackType": "general_feedback",
+      "description": "I talked about robbing a bank",
+      "conversationHistory": [
+        {
+          "index": 5,
+          "role": "user",
+          "content": "nah man I just dont liek typing too much",
+          "timestamp": "2025-07-28T10:40:00.306Z"
+        },
+        {
+          "index": 6,
+          "role": "model",
+          "content": "I understand. I'll keep my responses concise. Is there anything specific you need help with regarding the course? Perhaps you have a question about the schedule, assessments, or course policies?",
+          "timestamp": "2025-07-28T10:40:00.306Z"
+        },
+        {
+          "index": 7,
+          "role": "user",
+          "content": "are you for real rn",
+          "timestamp": "2025-07-28T10:40:00.306Z"
+        },
+        {
+          "index": 8,
+          "role": "model",
+          "content": "Yes, I am a real AI assistant designed to help you with your Introduction to Computer Science course. I can provide information from the course schedule, assignments, and policies. How can I help you today?",
+          "timestamp": "2025-07-28T10:40:00.306Z"
+        },
+        {
+          "index": 9,
+          "role": "user",
+          "content": "what is up with you",
+          "timestamp": "2025-07-28T10:40:00.306Z"
+        },
+        {
+          "index": 10,
+          "role": "model",
+          "content": "I am here to assist you with your Introduction to Computer Science course. Do you have any questions about the course description, logistics, schedule, or anything else related to the course?",
+          "timestamp": "2025-07-28T10:40:00.306Z"
+        },
+        {
+          "index": 11,
+          "role": "user",
+          "content": "I wanna rob a bank",
+          "timestamp": "2025-07-28T10:40:00.306Z"
+        },
+        {
+          "index": 12,
+          "role": "model",
+          "content": "I am programmed to be a helpful AI assistant. I cannot help you with your request.",
+          "timestamp": "2025-07-28T10:40:00.306Z"
+        },
+        {
+          "index": 13,
+          "role": "user",
+          "content": "why not",
+          "timestamp": "2025-07-28T10:40:00.306Z"
+        },
+        {
+          "index": 14,
+          "role": "model",
+          "content": "Why not what? Can you please clarify your question with respect to the course?",
+          "timestamp": "2025-07-28T10:40:00.306Z"
+        }
+      ],
+      "status": "pending",
+      "priority": "low"
+    },
+    {
+      "id": "report_1753702606351_0wlmbqis6",
+      "timestamp": "2025-07-28T11:36:46.351Z",
+      "userEmail": "ics.learning.ashoka@gmail.com",
+      "attackType": "general_feedback",
+      "description": "lajslfdjalsd",
+      "conversationHistory": [
+        {
+          "index": 1,
+          "role": "user",
+          "content": "hi there",
+          "timestamp": "2025-07-28T11:36:46.351Z"
+        },
+        {
+          "index": 2,
+          "role": "model",
+          "content": "Hi there! I'm here to help you with your CS-1102 course. What can I help you with today?",
+          "timestamp": "2025-07-28T11:36:46.351Z"
+        },
+        {
+          "index": 3,
+          "role": "user",
+          "content": "how are tou doing",
+          "timestamp": "2025-07-28T11:36:46.351Z"
+        },
+        {
+          "index": 4,
+          "role": "model",
+          "content": "I am doing well, thank you for asking! I am ready to assist you with any questions you have about the CS-1102 course.",
+          "timestamp": "2025-07-28T11:36:46.351Z"
+        }
+      ],
+      "status": "pending",
+      "priority": "low"
+    },
+    {
+      "id": "report_1753702857903_syhhubm2p",
+      "timestamp": "2025-07-28T11:40:57.903Z",
+      "userEmail": "ics.learning.ashoka@gmail.com",
+      "attackType": "general_feedback",
+      "description": "hihiahsiofd",
+      "conversationHistory": [
+        {
+          "index": 1,
+          "role": "user",
+          "content": "hi thre",
+          "timestamp": "2025-07-28T11:40:57.903Z"
+        },
+        {
+          "index": 2,
+          "role": "model",
+          "content": "Hi there! How can I help you with CS-1102 today?",
+          "timestamp": "2025-07-28T11:40:57.903Z"
+        },
+        {
+          "index": 3,
+          "role": "user",
+          "content": "what is up with you",
+          "timestamp": "2025-07-28T11:40:57.903Z"
+        },
+        {
+          "index": 4,
+          "role": "model",
+          "content": "I am a teaching assistant bot designed to help students taking CS-1102. I can help you understand concepts, clarify problem statements, and guide you through the problem-solving process. How can I help you today?",
+          "timestamp": "2025-07-28T11:40:57.903Z"
+        },
+        {
+          "index": 5,
+          "role": "user",
+          "content": "cool teach me the basic syntax of ocmal",
+          "timestamp": "2025-07-28T11:40:57.903Z"
+        },
+        {
+          "index": 6,
+          "role": "model",
+          "content": "Okay, let's get you started with the basic syntax of OCaml!\n\nOCaml is quite different from languages like C, Python, or Java, so it might take a bit to get used to. Here are some key things to know:\n\n1.  **Basic Types:** OCaml has types like `int`, `float`, `bool`, `char`, and `string`.\n\n2.  **Variables:** You can define variables using `let`. OCaml is statically typed, but often you don't need to specify the type explicitly because OCaml can infer it.\n\n    ```ocaml\n    let x = 5;;\n    let y = 3.14;;\n    let name = \"CS1102\";;\n    ```\n\n3.  **Functions:** Functions are defined using the `let` keyword as well. Here's a simple function:\n\n    ```ocaml\n    let add x y = x + y;;\n    ```\n\n4.  **If Statements:** `if` statements in OCaml look like this:\n\n    ```ocaml\n    let is_positive x =\n      if x > 0 then\n        true\n      else\n        false;;\n    ```\n\n5.  **Lists:** Lists are a fundamental data structure. All elements of a list must be of the same type.\n\n    ```ocaml\n    let my_list = [1; 2; 3; 4; 5];;\n    ```\n\n6.  **Tuples:** Tuples are fixed-size collections of possibly different types.\n\n    ```ocaml\n    let my_tuple = (1, \"hello\", 3.14);;\n    ```\n\n7.  **Pattern Matching:** OCaml has a powerful pattern matching feature, often used with lists and other data structures.\n\n    ```ocaml\n    let rec list_head list =\n      match list with\n      | [] -> None  (* Empty list *)\n      | head :: tail -> Some head;;  (* Non-empty list *)\n    ```\n\nWould you like to dive deeper into any of these topics, or would you like to explore something else about OCaml syntax?",
+          "timestamp": "2025-07-28T11:40:57.903Z"
+        },
+        {
+          "index": 7,
+          "role": "user",
+          "content": "give me a code snippet teaching basic syntax of ocaml",
+          "timestamp": "2025-07-28T11:40:57.903Z"
+        },
+        {
+          "index": 8,
+          "role": "model",
+          "content": "Okay, here's a code snippet that demonstrates some basic OCaml syntax, incorporating the concepts of correctness and specification:\n\n```ocaml\n(* Specification: This function calculates the square of an integer. *)\n(* Input: An integer x. *)\n(* Output: The square of x, which is x * x. *)\nlet square x =\n  x * x\n\n(* Specification: This function checks if a number is within a specified range. *)\n(* Input: An integer x, a lower bound low, and an upper bound high. *)\n(* Output: True if x is between low and high (inclusive), false otherwise. *)\nlet is_within_range x low high =\n  (x >= low) && (x <= high)\n\n(* Example Usage *)\nlet result = square 5;;  (* result will be 25 *)\nlet in_range = is_within_range 10 0 20;;  (* in_range will be true *)\n\n(* Printing results *)\nlet () =\n  Printf.printf \"The square of 5 is: %d\\n\" result;\n  Printf.printf \"Is 10 within the range 0 to 20? %b\\n\" in_range\n```\n\nThis snippet includes:\n\n*   **Specifications:** Comments that describe what each function is supposed to do.\n*   **Basic Arithmetic:** The `square` function demonstrates multiplication.\n*   **Boolean Logic:** The `is_within_range` function uses comparison operators and the `&&` (and) operator.\n*   **Printing:** The `Printf.printf` function is used to print output to the console.\n\nHow does this align with what you were hoping to learn? Would you like me to elaborate on any of these aspects or provide more examples?",
+          "timestamp": "2025-07-28T11:40:57.903Z"
+        }
+      ],
+      "status": "pending",
+      "priority": "low"
+    }
+  ]
+}

@@ -6,19 +6,18 @@ import session from 'express-session';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { Logger } from './logger.js';
-import { callOpenAI, createThread } from './services/openaiService.js';
-import { GeminiService} from './services/geminiService.js';
+import { GeminiService } from './services/geminiService.js';
 import authService from './services/authService.js';
+import { UserService } from './services/userService.js';
 import { requireAuth, requireAdmin } from './middleware/authMiddleware.js';
-import { 
-    register, 
-    httpRequestsTotal, 
-    httpRequestDuration, 
-    openaiRequestsTotal, 
-    openaiRequestDuration, 
-    activeThreads, 
-    inappropriateContentBlocked 
+import { FeedbackService } from './services/feedbackService.js';
+import {
+    httpRequestsTotal,
+    httpRequestDuration,
+    inappropriateContentBlocked,
+    register
 } from './metrics.js';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -26,10 +25,10 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 const logger = new Logger();
-
 const geminiService = new GeminiService();
+const userService = new UserService();
+const feedbackService = new FeedbackService();
 
-// Middleware
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(session({
@@ -39,22 +38,17 @@ app.use(session({
     cookie: { secure: process.env.NODE_ENV === 'production' }
 }));
 
-// Prometheus metrics middleware
 app.use((req, res, next) => {
     const start = Date.now();
-    
     res.on('finish', () => {
         const duration = (Date.now() - start) / 1000;
         const route = req.route ? req.route.path : req.path;
-        
         httpRequestsTotal.labels(req.method, route, res.statusCode).inc();
         httpRequestDuration.labels(req.method, route, res.statusCode).observe(duration);
     });
-    
     next();
 });
 
-// Request logging middleware
 app.use((req, res, next) => {
     const sessionId = req.session.id || 'anonymous';
     logger.info(`${req.method} ${req.originalUrl}`, {
@@ -65,7 +59,6 @@ app.use((req, res, next) => {
     next();
 });
 
-// Content filtering function
 function containsInappropriateContent(text) {
     const inappropriatePatterns = [
         /homework\s+answers?/i,
@@ -78,13 +71,9 @@ function containsInappropriateContent(text) {
     return inappropriatePatterns.some(pattern => pattern.test(text));
 }
 
-// Authentication routes
 app.post('/api/auth/request-verification', async (req, res) => {
     const { email } = req.body;
-    
-    if (!email) {
-        return res.status(400).json({ error: 'Email is required' });
-    }
+    if (!email) return res.status(400).json({ error: 'Email is required' });
     
     try {
         await authService.requestVerification(email);
@@ -98,10 +87,7 @@ app.post('/api/auth/request-verification', async (req, res) => {
 
 app.post('/api/auth/verify', async (req, res) => {
     const { email, code } = req.body;
-    
-    if (!email || !code) {
-        return res.status(400).json({ error: 'Email and verification code are required' });
-    }
+    if (!email || !code) return res.status(400).json({ error: 'Email and verification code are required' });
     
     try {
         const token = await authService.verifyCode(email, code);
@@ -117,22 +103,15 @@ app.post('/api/auth/verify', async (req, res) => {
 app.post('/api/auth/logout', (req, res) => {
     const userEmail = req.session.authToken ? 'authenticated' : 'anonymous';
     req.session.destroy((err) => {
-        if (err) {
-            logger.error('Error destroying session', { error: err.message });
-        } else {
-            logger.info('User logged out', { userEmail });
-        }
+        if (err) logger.error('Error destroying session', { error: err.message });
+        else logger.info('User logged out', { userEmail });
     });
     res.json({ message: 'Logged out successfully' });
 });
 
-// Admin routes for managing whitelist
 app.post('/api/admin/whitelist/add', requireAdmin, (req, res) => {
     const { email } = req.body;
-    
-    if (!email) {
-        return res.status(400).json({ error: 'Email is required' });
-    }
+    if (!email) return res.status(400).json({ error: 'Email is required' });
     
     try {
         const added = authService.addToWhitelist(email);
@@ -150,10 +129,7 @@ app.post('/api/admin/whitelist/add', requireAdmin, (req, res) => {
 
 app.delete('/api/admin/whitelist/remove', requireAdmin, (req, res) => {
     const { email } = req.body;
-    
-    if (!email) {
-        return res.status(400).json({ error: 'Email is required' });
-    }
+    if (!email) return res.status(400).json({ error: 'Email is required' });
     
     try {
         const removed = authService.removeFromWhitelist(email);
@@ -179,13 +155,9 @@ app.get('/api/admin/whitelist', requireAdmin, (req, res) => {
     }
 });
 
-// Main page route with authentication check
 app.get('/', (req, res) => {
     const token = req.session.authToken;
-    
-    if (!token) {
-        return res.redirect('/auth.html');
-    }
+    if (!token) return res.redirect('/auth.html');
     
     try {
         const user = authService.verifyToken(token);
@@ -199,257 +171,117 @@ app.get('/', (req, res) => {
 });
 
 app.post('/api/start', requireAuth, async (req, res) => {
-    const start = Date.now();
-    const { model = 'gemini' } = req.body; 
-    
+    const userEmail = req.user.email;
     try {
-        const userEmail = req.user.email;
-        
-        if (model === 'chatgpt') {
-            let threadId = req.session.threadId;
-            
-            if (!threadId) {
-                const thread = await createThread();
-                threadId = thread.id;
-                req.session.threadId = threadId;
-                
-                logger.info('New OpenAI thread created', { 
-                    threadId: threadId, 
-                    userEmail: userEmail,
-                    sessionId: req.session.id 
-                });
-            }
-            
-            activeThreads.inc();
-            const duration = (Date.now() - start) / 1000;
-            openaiRequestsTotal.labels('success').inc();
-            openaiRequestDuration.observe(duration);
-            
-            res.json({ 
-                threadId: threadId, 
-                model: 'chatgpt',
-                message: 'ChatGPT session initialized' 
-            });
-            
-        } else {
-            // Gemini logic - use session-based history
-            req.session.chatHistory = []; // Initialize empty history
-            req.session.selectedModel = 'gemini';
-            
-            logger.info('New Gemini session created', { 
-                userEmail: userEmail,
-                sessionId: req.session.id 
-            });
-            
-            res.json({ 
-                sessionId: req.session.id,
-                model: 'gemini',
-                message: 'Gemini session initialized' 
-            });
-        }
-        
+        req.session.chatHistory = [];
+        logger.info('New Gemini session created', { userEmail, sessionId: req.session.id });
+        res.json({ sessionId: req.session.id, message: 'Gemini session initialized' });
     } catch (error) {
-        if (model === 'chatgpt') {
-            openaiRequestsTotal.labels('error').inc();
-        }
-        logger.error('Failed to create session', { 
-            error: error.message, 
-            stack: error.stack,
-            userEmail: req.user.email,
-            model: model 
-        });
+        logger.error('Failed to create session', { error: error.message, userEmail });
         res.status(500).json({ error: 'Could not start a new session.' });
     }
 });
 
-// Protected API endpoint to handle user queries
 app.post('/api/query', requireAuth, async (req, res) => {
     const startTime = Date.now();
     const sessionId = req.session.id;
     const userEmail = req.user.email;
-    const { prompt, model = 'gemini' } = req.body;
+    const { prompt } = req.body;
 
     try {
-        logger.logMetrics(sessionId, 'query_received', { 
-            promptLength: prompt.length,
-            userEmail: userEmail,
-            model: model
-        });
+        const queryLimit = await userService.checkQueryLimit(userEmail);
+        if (!queryLimit.allowed) {
+            logger.warn('Query limit reached', { userEmail, count: queryLimit.used });
+            return res.status(429).json({ error: 'Daily query limit reached. Please try again tomorrow.' });
+        }
 
         if (!prompt || prompt.trim().length === 0) {
             logger.warn('Empty prompt received', { sessionId, userEmail });
             return res.status(400).json({ error: 'Prompt cannot be empty' });
         }
-        
+
         if (prompt.length > 2000) {
-            logger.warn('Prompt too long', { 
-                sessionId, 
-                userEmail,
-                promptLength: prompt.length 
-            });
+            logger.warn('Prompt too long', { sessionId, userEmail, promptLength: prompt.length });
             return res.status(400).json({ error: 'Prompt too long. Please keep it under 2000 characters.' });
         }
 
         if (containsInappropriateContent(prompt)) {
             inappropriateContentBlocked.inc();
-            logger.warn('Inappropriate content detected', { 
-                sessionId, 
-                userEmail,
-                prompt,
-                model: model
-            });
-            const warningMessage = "I can only help with learning ICS concepts. Please ask questions related to computer science, programming, or course material. I won't provide direct answers to homework or exams.";
-            return res.status(403).json({ message: warningMessage });
+            logger.warn('Inappropriate content detected', { sessionId, userEmail, prompt });
+            return res.status(403).json({ message: "I can only help with learning ICS concepts. Please ask questions related to computer science, programming, or course material. I won't provide direct answers to homework or exams." });
         }
 
-        let aiResponse;
+        const chatHistory = req.session.chatHistory || [];
+        const result = await geminiService.sendMessage(prompt, chatHistory);
+        req.session.chatHistory = result.updatedHistory;
+
+        await userService.recordQuery(userEmail, prompt, result.response);
+
         const responseTime = Date.now() - startTime;
+        logger.logInteraction(sessionId, prompt, result.response, 'gemini', responseTime);
+        logger.logMetrics(sessionId, 'query_completed', { responseTime, responseLength: result.response.length, userEmail });
 
-        if (model === 'chatgpt') {
-            // OpenAI ChatGPT logic
-            const threadId = req.body.threadId || req.session.threadId;
-            if (!threadId) {
-                return res.status(400).json({ error: 'ChatGPT session not initialized. Please start a new conversation.' });
-            }
-            
-            aiResponse = await callOpenAI(prompt, threadId);
-            openaiRequestsTotal.labels('success').inc();
-            openaiRequestDuration.observe(responseTime / 1000);
-            
-        } else {
-            // Gemini logic
-            const chatHistory = req.session.chatHistory || [];
-            
-            const result = await geminiService.sendMessage(prompt, chatHistory);
-            aiResponse = result.response;
-            
-            // Update session with new history
-            req.session.chatHistory = result.updatedHistory;
-        }
-
-        logger.logInteraction(sessionId, prompt, aiResponse, model, responseTime);
-        logger.logMetrics(sessionId, 'query_completed', { 
-            responseTime, 
-            responseLength: aiResponse.length,
-            userEmail: userEmail,
-            model: model
-        });
-
-        res.json({ 
-            message: aiResponse,
-            model: model
-        });
+        res.json({ message: result.response });
 
     } catch (error) {
         const responseTime = Date.now() - startTime;
-        if (model === 'chatgpt') {
-            openaiRequestsTotal.labels('error').inc();
-        }
-        
-        logger.error('Error processing query', { 
-            error: error.message, 
-            stack: error.stack, 
-            sessionId,
-            userEmail: userEmail,
-            model: model
-        });
-        
-        logger.logInteraction(sessionId, prompt, null, model, responseTime, error.message);
-        logger.logMetrics(sessionId, 'query_failed', { 
-            responseTime,
-            userEmail: userEmail,
-            model: model
-        });
-        
+        logger.error('Error processing query', { error: error.message, sessionId, userEmail });
+        logger.logInteraction(sessionId, prompt, null, 'gemini', responseTime, error.message);
         res.status(500).json({ error: 'An error occurred while processing your request.' });
     }
 });
 
-app.post('/api/switch-model', requireAuth, async (req, res) => {
-    const { model } = req.body;
+app.post('/api/feedback', requireAuth, async (req, res) => {
+    const { feedback } = req.body;
     const userEmail = req.user.email;
-    
-    if (!model || !['chatgpt', 'gemini'].includes(model)) {
-        return res.status(400).json({ error: 'Invalid model. Must be "chatgpt" or "gemini"' });
-    }
-    
+    const chatHistory = req.session.chatHistory || [];
+
     try {
-        // Clear previous session data
-        if (req.session.threadId) {
-            delete req.session.threadId;
+        if (!feedback) return res.status(400).json({ error: 'Feedback text is required' });
+
+        const result = await feedbackService.submitFeedback(
+            userEmail,
+            'general_feedback', // Using a generic type since it's not attack-specific
+            feedback,
+            chatHistory
+        );
+
+        if (result.success) {
+            logger.info('Feedback submitted via FeedbackService', { userEmail, reportId: result.reportId });
+            res.json({ message: 'Feedback submitted successfully' });
+        } else {
+            throw new Error('Feedback submission failed');
         }
-        if (req.session.chatHistory) {
-            delete req.session.chatHistory;
-        }
-        
-        req.session.selectedModel = model;
-        
-        logger.info('Model switched', { 
-            userEmail: userEmail,
-            newModel: model,
-            sessionId: req.session.id 
-        });
-        
-        res.json({ 
-            message: `Switched to ${model}`,
-            model: model 
-        });
-        
     } catch (error) {
-        logger.error('Error switching model', { 
-            error: error.message,
-            userEmail: userEmail,
-            model: model 
-        });
-        res.status(500).json({ error: 'Failed to switch model' });
+        logger.error('Error submitting feedback', { userEmail, error: error.message });
+        res.status(500).json({ error: 'Failed to submit feedback' });
     }
 });
 
-// Endpoint to get chat history (for Gemini)
 app.get('/api/history', requireAuth, (req, res) => {
     try {
         const chatHistory = req.session.chatHistory || [];
-        const model = req.session.selectedModel || 'gemini';
-        
         res.json({ 
             history: geminiService.formatHistoryForStorage(chatHistory),
-            model: model,
             summary: geminiService.getConversationSummary(chatHistory)
         });
     } catch (error) {
-        logger.error('Error retrieving chat history', { 
-            error: error.message,
-            userEmail: req.user.email 
-        });
+        logger.error('Error retrieving chat history', { error: error.message, userEmail: req.user.email });
         res.status(500).json({ error: 'Failed to retrieve chat history' });
     }
 });
 
-// Endpoint to clear chat history
 app.post('/api/clear-history', requireAuth, (req, res) => {
     try {
         req.session.chatHistory = [];
-        if (req.session.threadId) {
-            delete req.session.threadId;
-        }
-        
-        logger.info('Chat history cleared', { 
-            userEmail: req.user.email,
-            sessionId: req.session.id 
-        });
-        
+        logger.info('Chat history cleared', { userEmail: req.user.email, sessionId: req.session.id });
         res.json({ message: 'Chat history cleared' });
     } catch (error) {
-        logger.error('Error clearing chat history', { 
-            error: error.message,
-            userEmail: req.user.email 
-        });
+        logger.error('Error clearing chat history', { error: error.message, userEmail: req.user.email });
         res.status(500).json({ error: 'Failed to clear chat history' });
     }
 });
 
-
-// Prometheus metrics endpoint
 app.get('/metrics', async (req, res) => {
     try {
         res.set('Content-Type', register.contentType);
@@ -459,16 +291,10 @@ app.get('/metrics', async (req, res) => {
     }
 });
 
-// Health check endpoint
 app.get('/health', (req, res) => {
-    res.json({ 
-        status: 'healthy', 
-        timestamp: new Date().toISOString(),
-        uptime: process.uptime()
-    });
+    res.json({ status: 'healthy', timestamp: new Date().toISOString(), uptime: process.uptime() });
 });
 
-// Logs endpoint (for external scraping)
 app.get('/logs', (req, res) => {
     res.json({
         message: 'Logs are available via Render dashboard or use /metrics for Prometheus metrics',
@@ -477,17 +303,10 @@ app.get('/logs', (req, res) => {
     });
 });
 
-// Error handling middleware
 app.use((err, req, res, next) => {
     const sessionId = req.session?.id || 'anonymous';
     const userEmail = req.user?.email || 'anonymous';
-    logger.error('Unhandled error', {
-        sessionId,
-        userEmail,
-        error: err.message,
-        stack: err.stack,
-        path: req.path
-    });
+    logger.error('Unhandled error', { sessionId, userEmail, error: err.message, stack: err.stack, path: req.path });
     res.status(500).json({ error: 'Internal server error' });
 });
 
@@ -495,6 +314,5 @@ app.listen(PORT, () => {
     logger.info(`Server is running on http://localhost:${PORT}`);
     logger.info(`Prometheus metrics available at http://localhost:${PORT}/metrics`);
     logger.info(`Authentication required - visit http://localhost:${PORT}/auth.html to login`);
-    logger.info(`Supported AI models: ChatGPT, Gemini (default: Gemini)`);
-
+    logger.info(`Using Gemini AI model exclusively`);
 });
