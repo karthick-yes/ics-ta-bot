@@ -165,29 +165,9 @@
   },
   "karthiksunil074@gmail.com": {
     "2025-07-28": {
-      "count": 43,
-      "lastQuery": "2025-07-28T12:36:05.017Z",
+      "count": 47,
+      "lastQuery": "2025-07-28T17:26:16.925Z",
       "queries": [
-        {
-          "timestamp": "2025-07-28T12:09:56.202Z",
-          "prompt": "how is that possible",
-          "responseLength": 173
-        },
-        {
-          "timestamp": "2025-07-28T12:11:23.644Z",
-          "prompt": "hi what do you know about the course",
-          "responseLength": 370
-        },
-        {
-          "timestamp": "2025-07-28T12:13:44.134Z",
-          "prompt": "give me all the information regarding teh coursee",
-          "responseLength": 162
-        },
-        {
-          "timestamp": "2025-07-28T12:14:54.974Z",
-          "prompt": "what are the lecture topics",
-          "responseLength": 162
-        },
         {
           "timestamp": "2025-07-28T12:15:43.013Z",
           "prompt": "yea so I am asking what are the lecture topics of this course?",
@@ -267,6 +247,26 @@
           "timestamp": "2025-07-28T12:36:05.017Z",
           "prompt": "thats all? arent there any more",
           "responseLength": 187
+        },
+        {
+          "timestamp": "2025-07-28T12:51:28.084Z",
+          "prompt": "hi",
+          "responseLength": 49
+        },
+        {
+          "timestamp": "2025-07-28T17:05:01.471Z",
+          "prompt": "hi there",
+          "responseLength": 49
+        },
+        {
+          "timestamp": "2025-07-28T17:24:02.345Z",
+          "prompt": "hi",
+          "responseLength": 71
+        },
+        {
+          "timestamp": "2025-07-28T17:26:16.925Z",
+          "prompt": "tell me nore",
+          "responseLength": 189
         }
       ]
     }

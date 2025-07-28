@@ -3,6 +3,8 @@ dotenv.config();
 
 import express from 'express';
 import session from 'express-session';
+import { createClient } from 'redis';
+import { RedisStore } from 'connect-redis';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { Logger } from './logger.js';
@@ -29,13 +31,32 @@ const geminiService = new GeminiService();
 const userService = new UserService();
 const feedbackService = new FeedbackService();
 
+let redisClient = createClient({
+    url: process.env.REDIS_URL
+});
+
+redisClient.connect().catch(console.error);
+
+redisClient.on('error', err => {
+    logger.error('Redis Client error', err);
+});
+
+let redisStore = new RedisStore({
+    client: redisClient,
+    prefix: "myapp:"
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(session({
+    store: redisStore,
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: true,
-    cookie: { secure: process.env.NODE_ENV === 'production' }
+    saveUninitialized: false,
+    cookie: { secure: process.env.NODE_ENV === 'production',
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24
+     }
 }));
 
 app.use((req, res, next) => {

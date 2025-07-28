@@ -66,3 +66,7 @@
 {"timestamp":"2025-07-28T12:35:31.299Z","sessionId":"tVFUfBp_KMJlahZAoj48LzWDC35sqXiG","event":"query_completed","data":{"responseTime":3265,"responseLength":240,"userEmail":"karthiksunil074@gmail.com"}}
 {"timestamp":"2025-07-28T12:35:46.204Z","sessionId":"tVFUfBp_KMJlahZAoj48LzWDC35sqXiG","event":"query_completed","data":{"responseTime":3089,"responseLength":177,"userEmail":"karthiksunil074@gmail.com"}}
 {"timestamp":"2025-07-28T12:36:05.022Z","sessionId":"tVFUfBp_KMJlahZAoj48LzWDC35sqXiG","event":"query_completed","data":{"responseTime":3294,"responseLength":187,"userEmail":"karthiksunil074@gmail.com"}}
+{"timestamp":"2025-07-28T12:51:28.093Z","sessionId":"g1PAj0OlxpNuLPdxcax-DYE4YSXXMTvP","event":"query_completed","data":{"responseTime":2559,"responseLength":49,"userEmail":"karthiksunil074@gmail.com"}}
+{"timestamp":"2025-07-28T17:05:01.480Z","sessionId":"2dZU_AtYhY9U15ogYutOksIP9uGB09as","event":"query_completed","data":{"responseTime":3210,"responseLength":49,"userEmail":"karthiksunil074@gmail.com"}}
+{"timestamp":"2025-07-28T17:24:02.365Z","sessionId":"tUNOpA68yucUFdNmIiqp_yV-CYcluyb1","event":"query_completed","data":{"responseTime":2882,"responseLength":71,"userEmail":"karthiksunil074@gmail.com"}}
+{"timestamp":"2025-07-28T17:26:16.932Z","sessionId":"tUNOpA68yucUFdNmIiqp_yV-CYcluyb1","event":"query_completed","data":{"responseTime":3261,"responseLength":189,"userEmail":"karthiksunil074@gmail.com"}}
