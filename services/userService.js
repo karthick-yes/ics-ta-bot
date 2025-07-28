@@ -14,7 +14,7 @@ class UserService {
     constructor() {
         // Configuration for daily limits
         this.config = {
-            dailyQueryLimit: parseInt(process.env.DAILY_QUERY_LIMIT) || 50,
+            dailyQueryLimit: parseInt(process.env.DAILY_QUERY_LIMIT) || 15,
             adminEmails: (process.env.ADMIN_EMAILS || '').split(',').map(email => email.trim()).filter(Boolean),
             dataFile: path.join(__dirname, '../data/user_queries.json')
         };
