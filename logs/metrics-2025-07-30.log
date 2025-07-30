@@ -1,3 +1,10 @@
 {"timestamp":"2025-07-30T09:37:14.706Z","sessionId":"OimJaEzeaWZ60SdR507JcbFLXvAg5RnT","event":"query_completed","data":{"responseTime":3469,"responseLength":49,"userEmail":"karthiksunil074@gmail.com"}}
 {"timestamp":"2025-07-30T09:53:58.578Z","sessionId":"OimJaEzeaWZ60SdR507JcbFLXvAg5RnT","event":"query_completed","data":{"responseTime":3108,"responseLength":77,"userEmail":"karthiksunil074@gmail.com"}}
 {"timestamp":"2025-07-30T09:54:37.193Z","sessionId":"OimJaEzeaWZ60SdR507JcbFLXvAg5RnT","event":"query_completed","data":{"responseTime":4888,"responseLength":1134,"userEmail":"karthiksunil074@gmail.com"}}
+{"timestamp":"2025-07-30T10:38:31.129Z","sessionId":"-xwqukN4qt_pTPwKdxNM_ym3945Bgksy","event":"query_completed","data":{"responseTime":3358,"responseLength":71,"userEmail":"ics.learning.ashoka@gmail.com"}}
+{"timestamp":"2025-07-30T10:43:34.749Z","sessionId":"-xwqukN4qt_pTPwKdxNM_ym3945Bgksy","event":"query_completed","data":{"responseTime":3446,"responseLength":465,"userEmail":"ics.learning.ashoka@gmail.com"}}
+{"timestamp":"2025-07-30T10:45:18.643Z","sessionId":"-xwqukN4qt_pTPwKdxNM_ym3945Bgksy","event":"query_completed","data":{"responseTime":4747,"responseLength":339,"userEmail":"ics.learning.ashoka@gmail.com"}}
+{"timestamp":"2025-07-30T10:45:36.925Z","sessionId":"-xwqukN4qt_pTPwKdxNM_ym3945Bgksy","event":"query_completed","data":{"responseTime":4018,"responseLength":454,"userEmail":"ics.learning.ashoka@gmail.com"}}
+{"timestamp":"2025-07-30T10:46:02.146Z","sessionId":"-xwqukN4qt_pTPwKdxNM_ym3945Bgksy","event":"query_completed","data":{"responseTime":6147,"responseLength":591,"userEmail":"ics.learning.ashoka@gmail.com"}}
+{"timestamp":"2025-07-30T10:49:41.464Z","sessionId":"-xwqukN4qt_pTPwKdxNM_ym3945Bgksy","event":"query_completed","data":{"responseTime":4060,"responseLength":144,"userEmail":"ics.learning.ashoka@gmail.com"}}
+{"timestamp":"2025-07-30T10:50:35.479Z","sessionId":"-xwqukN4qt_pTPwKdxNM_ym3945Bgksy","event":"query_completed","data":{"responseTime":4493,"responseLength":118,"userEmail":"ics.learning.ashoka@gmail.com"}}

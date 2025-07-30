@@ -161,6 +161,47 @@
           "responseLength": 197
         }
       ]
+    },
+    "2025-07-30": {
+      "count": 7,
+      "lastQuery": "2025-07-30T10:50:35.473Z",
+      "queries": [
+        {
+          "timestamp": "2025-07-30T10:38:31.113Z",
+          "prompt": "hi there",
+          "responseLength": 71
+        },
+        {
+          "timestamp": "2025-07-30T10:43:34.745Z",
+          "prompt": "what happened in lecture 10?",
+          "responseLength": 465
+        },
+        {
+          "timestamp": "2025-07-30T10:45:18.635Z",
+          "prompt": "what is the proof that this is what happeend in lecture 10?",
+          "responseLength": 339
+        },
+        {
+          "timestamp": "2025-07-30T10:45:36.918Z",
+          "prompt": "lecture 11?",
+          "responseLength": 454
+        },
+        {
+          "timestamp": "2025-07-30T10:46:02.142Z",
+          "prompt": "what are the reading materials for this course?",
+          "responseLength": 591
+        },
+        {
+          "timestamp": "2025-07-30T10:49:41.458Z",
+          "prompt": "when are the mid term grades out",
+          "responseLength": 144
+        },
+        {
+          "timestamp": "2025-07-30T10:50:35.473Z",
+          "prompt": "is there a meme contest or a poerty contest as an extra credit",
+          "responseLength": 118
+        }
+      ]
     }
   },
   "karthiksunil074@gmail.com": {
