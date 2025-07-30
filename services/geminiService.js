@@ -210,18 +210,28 @@ class GeminiService {
     }
 
     async sendMessage(prompt, sessionHistory = []) {
+        
         try {
-            const contextResults = await this.qdrantService.searchSimilarTexts(prompt, );
+            const contextResults = await this.qdrantService.searchSimilarTexts(prompt);
             let fullPrompt = prompt;
 
-            if (contextResults && contextResults.length > 0) {
-                const context = "Relevant course information:\n" + contextResults.map(r => r.text).join("\n\n") + "\n\n";
+            // Clean and filter context results
+            const cleanedContextTexts = contextResults
+                .map(r => r.text?.trim())
+                .filter(Boolean); // remove empty/null/whitespace
+
+            if (cleanedContextTexts.length > 0) {
+                const context = "Relevant course information:\n" +
+                    cleanedContextTexts.join("\n\n") + "\n\n";
+
                 fullPrompt = context + "Student question: " + prompt;
+
                 logger.info('Added context to prompt', {
                     originalPromptLength: prompt.length,
-                    contextChunks: contextResults.length,
+                    contextChunks: cleanedContextTexts.length,
                     fullPromptLength: fullPrompt.length,
-                    contextText: context                });
+                    contextPreview: cleanedContextTexts.slice(0, 2).join(" | ").slice(0, 200)
+                });
             } else {
                 logger.info('No relevant context found', { promptLength: prompt.length });
             }
@@ -240,18 +250,21 @@ class GeminiService {
                 promptLength: prompt.length,
                 responseLength: responseText.length,
                 historyLength: updatedHistory.length,
-                contextUsed: contextResults.length > 0
+                contextUsed: cleanedContextTexts.length > 0
             });
 
             return {
                 response: responseText,
-                updatedHistory: updatedHistory,
-                contextUsed: contextResults.length > 0,
-                contextChunks: contextResults.length
+                updatedHistory,
+                contextUsed: cleanedContextTexts.length > 0,
+                contextChunks: cleanedContextTexts.length
             };
 
         } catch (error) {
-            logger.error('Failed to get response from gemini', { error: error.message, promptLength: prompt.length });
+            logger.error('Failed to get response from Gemini', {
+                error: error.message,
+                promptLength: prompt.length
+            });
             throw error;
         }
     }

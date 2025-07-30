@@ -17,7 +17,7 @@ export function requireAuth(req, res, next) {
 }
 
 export function requireAdmin(req, res, next) {
-    // You can extend this to check for admin privileges
+    // I can extend this to check for admin privileges
     // For now, we'll just check if they're authenticated
     requireAuth(req, res, next);
 }

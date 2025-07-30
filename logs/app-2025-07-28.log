@@ -970,3 +970,5 @@
 {"timestamp":"2025-07-28T17:26:16.920Z","level":"INFO","message":"Gemini response generated successfully","data":{"promptLength":12,"responseLength":189,"historyLength":4,"contextUsed":true},"pid":21716}
 {"timestamp":"2025-07-28T17:26:16.927Z","level":"INFO","message":"Query recorded","data":{"email":"karthiksunil074@gmail.com","dailyCount":47,"promptLength":12},"pid":21716}
 {"timestamp":"2025-07-28T17:26:16.930Z","level":"INFO","message":"Interaction logged for session tUNOpA68yucUFdNmIiqp_yV-CYcluyb1","pid":21716}
+{"timestamp":"2025-07-30T06:57:12.903Z","level":"ERROR","message":"Redis Client error","data":{},"pid":21716}
+{"timestamp":"2025-07-30T06:57:12.924Z","level":"ERROR","message":"Redis Client error","data":{},"pid":21716}

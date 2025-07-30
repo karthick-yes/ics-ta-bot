@@ -269,6 +269,27 @@
           "responseLength": 189
         }
       ]
+    },
+    "2025-07-30": {
+      "count": 3,
+      "lastQuery": "2025-07-30T09:54:37.182Z",
+      "queries": [
+        {
+          "timestamp": "2025-07-30T09:37:14.699Z",
+          "prompt": "hi",
+          "responseLength": 49
+        },
+        {
+          "timestamp": "2025-07-30T09:53:58.569Z",
+          "prompt": "hi",
+          "responseLength": 77
+        },
+        {
+          "timestamp": "2025-07-30T09:54:37.182Z",
+          "prompt": "what are the frequently asked questions in this coufse?",
+          "responseLength": 1134
+        }
+      ]
     }
   }
 }

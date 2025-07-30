@@ -19,6 +19,7 @@ import {
     inappropriateContentBlocked,
     register
 } from './metrics.js';
+import { error } from 'console';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -32,18 +33,68 @@ const userService = new UserService();
 const feedbackService = new FeedbackService();
 
 let redisClient = createClient({
-    url: process.env.REDIS_URL
+    url: process.env.REDIS_URL,
+    socket: {
+        reconnectStrategy: (retries) => Math.min(retries * 50, 1000)
+    }
 });
 
-redisClient.connect().catch(console.error);
+redisClient.on('connect', () => {
+    logger.info('Redis client connected to the server')
+});
+
+redisClient.on('ready', () => {
+    logger.info('Redis client ready to use')
+});
 
 redisClient.on('error', err => {
-    logger.error('Redis Client error', err);
+    logger.error('Redis Client error', {
+        error: err.message,
+        code: err.code,
+        stack: err.stack
+    });
 });
+
+redisClient.on('end', () => {
+    logger.warn('Redis client connection ended');
+});
+
+redisClient.on('reconnecting', () => {
+    logger.info('Redis client reconnecting...');
+});
+
+//debug statement
+try {
+    await redisClient.connect();
+    logger.info('Redis connection established successfully');
+} catch (error) {
+    logger.error('Failed to connect to Redis:', { 
+        error: error.message,
+        redisUrl: process.env.REDIS_URL ? 'SET' : 'NOT SET'
+    });
+}
+
+
+// Test Redis functionality
+try {
+    await redisClient.set('test_key', 'test_value');
+    const testValue = await redisClient.get('test_key');
+    logger.info('Redis test successful:', { testValue });
+    await redisClient.del('test_key');
+} catch (error) {
+    logger.error('Redis test failed:', { error: error.message });
+}
+ 
 
 let redisStore = new RedisStore({
     client: redisClient,
-    prefix: "myapp:"
+    prefix: "icstabot:",
+    ttl:86400,
+    disableTouch: false
+});
+
+redisStore.on('error', (err) => {
+    logger.error('RedisStore error: ', {error: err.message});
 });
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -53,11 +104,35 @@ app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: process.env.NODE_ENV === 'production',
+    rolling: true, // Refresh session expiry on each request
+    name: 'icsbot.session', // Custom session name
+    cookie: { 
+        secure: process.env.NODE_ENV === 'production' && process.env.FORCE_HTTPS === 'true',
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24
-     }
+        maxAge: 1000 * 60 * 60 * 24, // 24 hours
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+    }
 }));
+
+// Session debugging middleware
+app.use((req, res, next) => {
+    const sessionInfo = {
+        sessionId: req.session.id,
+        isNew: req.session.isNew,
+        hasAuthToken: !!req.session.authToken,
+        hasChatHistory: !!req.session.chatHistory,
+        chatHistoryLength: req.session.chatHistory?.length || 0,
+        sessionKeys: Object.keys(req.session),
+        redisConnected: redisClient.isReady,
+        redisStatus: redisClient.isOpen,
+    };
+    
+    if (req.path.startsWith('/api/')) {
+        logger.info('Session Debug:', sessionInfo);
+    }
+    
+    next();
+});
 
 app.use((req, res, next) => {
     const start = Date.now();
@@ -257,27 +332,87 @@ app.post('/api/feedback', requireAuth, async (req, res) => {
     const userEmail = req.user.email;
     const chatHistory = req.session.chatHistory || [];
 
+    // Detailed session debugging
+    logger.info('Feedback submission debug:', {
+        userEmail,
+        sessionId: req.session.id,
+        sessionAge: req.session.cookie.maxAge,
+        sessionIsNew: req.session.isNew,
+        hasHistory: !!req.session.chatHistory,
+        historyLength: chatHistory.length,
+        historyPreview: chatHistory.slice(-2), // Last 2 messages for debugging
+        redisConnected: redisClient.isReady,
+        redisStatus: redisClient.status,
+        sessionKeys: Object.keys(req.session)
+    });
+
     try {
         if (!feedback) return res.status(400).json({ error: 'Feedback text is required' });
 
         const result = await feedbackService.submitFeedback(
             userEmail,
-            'general_feedback', // Using a generic type since it's not attack-specific
+            'general_feedback',
             feedback,
             chatHistory
         );
 
         if (result.success) {
-            logger.info('Feedback submitted via FeedbackService', { userEmail, reportId: result.reportId });
+            logger.info('Feedback submitted successfully:', { 
+                userEmail, 
+                reportId: result.reportId,
+                conversationLength: chatHistory.length 
+            });
             res.json({ message: 'Feedback submitted successfully' });
         } else {
             throw new Error('Feedback submission failed');
         }
     } catch (error) {
-        logger.error('Error submitting feedback', { userEmail, error: error.message });
+        logger.error('Feedback submission error:', { 
+            userEmail, 
+            error: error.message,
+            sessionId: req.session.id 
+        });
         res.status(500).json({ error: 'Failed to submit feedback' });
     }
 });
+
+//DEBUG test session persistence
+
+app.post('/api/debug/session-test', requireAuth, (req, res) => {
+    const { testData } = req.body;
+    
+    if (!req.session.testHistory) {
+        req.session.testHistory = [];
+    }
+    
+    req.session.testHistory.push({
+        timestamp: new Date().toISOString(),
+        data: testData || 'test message',
+        count: req.session.testHistory.length + 1
+    });
+    
+    logger.info('Session test data stored:', {
+        sessionId: req.session.id,
+        historyLength: req.session.testHistory.length
+    });
+    
+    res.json({
+        message: 'Test data stored in session',
+        sessionId: req.session.id,
+        testHistory: req.session.testHistory,
+        totalMessages: req.session.testHistory.length
+    });
+});
+
+app.get('/api/debug/session-test', requireAuth, (req, res) => {
+    res.json({
+        sessionId: req.session.id,
+        testHistory: req.session.testHistory || [],
+        chatHistory: req.session.chatHistory || [],
+        sessionKeys: Object.keys(req.session)
+    });
+});
+
 
 app.get('/api/history', requireAuth, (req, res) => {
     try {
@@ -302,6 +437,55 @@ app.post('/api/clear-history', requireAuth, (req, res) => {
         res.status(500).json({ error: 'Failed to clear chat history' });
     }
 });
+
+app.get('/api/debug/redis', requireAuth, async (req, res) => {
+    try {
+        const ping = await redisClient.ping();
+        
+        const testKey = `test_${Date.now()}`;
+        await redisClient.set(testKey, 'test_value', { EX: 10 });
+        const testValue = await redisClient.get(testKey);
+        await redisClient.del(testKey);
+        
+        // Get Redis info
+        const info = await redisClient.info();
+        
+        // Test session store
+        const sessionKeys = await redisClient.keys('icsbot:*');
+        
+        res.json({
+            redis: {
+                connected: redisClient.isReady,
+                status: redisClient.status,
+                ping: ping,
+                testOperation: testValue === 'test_value' ? 'SUCCESS' : 'FAILED',
+                sessionKeys: sessionKeys.length,
+                info: info.split('\n').slice(0, 10) // First 10 lines of info
+            },
+            session: {
+                id: req.session.id,
+                isNew: req.session.isNew,
+                keys: Object.keys(req.session),
+                chatHistoryLength: req.session.chatHistory?.length || 0
+            },
+            environment: {
+                redisUrl: process.env.REDIS_URL ? 'SET' : 'NOT SET',
+                nodeEnv: process.env.NODE_ENV
+            }
+        });
+    } catch (error) {
+        logger.error('Redis debug endpoint error:', { error: error.message });
+        res.status(500).json({ 
+            error: error.message,
+            redis: {
+                connected: redisClient.isReady,
+                status: redisClient.status
+            }
+        });
+    }
+});
+
+
 
 app.get('/metrics', async (req, res) => {
     try {
