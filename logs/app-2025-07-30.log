@@ -148,3 +148,21 @@
 {"timestamp":"2025-07-30T10:50:35.468Z","level":"INFO","message":"Gemini response generated successfully","data":{"promptLength":62,"responseLength":118,"historyLength":4,"contextUsed":true},"pid":40956}
 {"timestamp":"2025-07-30T10:50:35.475Z","level":"INFO","message":"Query recorded","data":{"email":"ics.learning.ashoka@gmail.com","dailyCount":7,"promptLength":62},"pid":40956}
 {"timestamp":"2025-07-30T10:50:35.478Z","level":"INFO","message":"Interaction logged for session -xwqukN4qt_pTPwKdxNM_ym3945Bgksy","pid":40956}
+{"timestamp":"2025-07-30T11:55:55.110Z","level":"INFO","message":"Redis client connected to the server","pid":39168}
+{"timestamp":"2025-07-30T11:55:55.132Z","level":"INFO","message":"Redis client ready to use","pid":39168}
+{"timestamp":"2025-07-30T11:55:55.133Z","level":"INFO","message":"Redis connection established successfully","pid":39168}
+{"timestamp":"2025-07-30T11:55:55.145Z","level":"INFO","message":"Redis test successful:","data":{"testValue":"test_value"},"pid":39168}
+{"timestamp":"2025-07-30T11:55:55.155Z","level":"INFO","message":"Server is running on http://localhost:3000","pid":39168}
+{"timestamp":"2025-07-30T11:55:55.156Z","level":"INFO","message":"Prometheus metrics available at http://localhost:3000/metrics","pid":39168}
+{"timestamp":"2025-07-30T11:55:55.157Z","level":"INFO","message":"Authentication required - visit http://localhost:3000/auth.html to login","pid":39168}
+{"timestamp":"2025-07-30T11:55:55.157Z","level":"INFO","message":"Using Gemini AI model exclusively","pid":39168}
+{"timestamp":"2025-07-30T11:55:56.865Z","level":"INFO","message":"Email service connected successfully","data":{"user":"ics.learning.ashoka@***"},"pid":39168}
+{"timestamp":"2025-07-30T11:56:03.683Z","level":"INFO","message":"Session Debug:","data":{"sessionId":"-xwqukN4qt_pTPwKdxNM_ym3945Bgksy","hasAuthToken":true,"hasChatHistory":true,"chatHistoryLength":4,"sessionKeys":["cookie","authToken","chatHistory"],"redisConnected":true,"redisStatus":true},"pid":39168}
+{"timestamp":"2025-07-30T11:56:03.685Z","level":"INFO","message":"POST /api/start","data":{"sessionId":"-xwqukN4qt_pTPwKdxNM_ym3945Bgksy","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36","ip":"::1"},"pid":39168}
+{"timestamp":"2025-07-30T11:56:03.691Z","level":"INFO","message":"New Gemini session created","data":{"userEmail":"ics.learning.ashoka@gmail.com","sessionId":"-xwqukN4qt_pTPwKdxNM_ym3945Bgksy"},"pid":39168}
+{"timestamp":"2025-07-30T11:56:10.682Z","level":"INFO","message":"Session Debug:","data":{"sessionId":"-xwqukN4qt_pTPwKdxNM_ym3945Bgksy","hasAuthToken":true,"hasChatHistory":true,"chatHistoryLength":0,"sessionKeys":["cookie","authToken","chatHistory"],"redisConnected":true,"redisStatus":true},"pid":39168}
+{"timestamp":"2025-07-30T11:56:10.684Z","level":"INFO","message":"POST /api/query","data":{"sessionId":"-xwqukN4qt_pTPwKdxNM_ym3945Bgksy","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36","ip":"::1"},"pid":39168}
+{"timestamp":"2025-07-30T11:56:14.074Z","level":"INFO","message":"No relevant context found","data":{"promptLength":27},"pid":39168}
+{"timestamp":"2025-07-30T11:56:15.071Z","level":"INFO","message":"Gemini response generated successfully","data":{"promptLength":27,"responseLength":65,"historyLength":2,"contextUsed":false},"pid":39168}
+{"timestamp":"2025-07-30T11:56:15.078Z","level":"INFO","message":"Query recorded","data":{"email":"ics.learning.ashoka@gmail.com","dailyCount":8,"promptLength":27},"pid":39168}
+{"timestamp":"2025-07-30T11:56:15.080Z","level":"INFO","message":"Interaction logged for session -xwqukN4qt_pTPwKdxNM_ym3945Bgksy","pid":39168}

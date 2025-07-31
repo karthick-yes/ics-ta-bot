@@ -242,6 +242,37 @@ app.delete('/api/admin/whitelist/remove', requireAdmin, (req, res) => {
     }
 });
 
+//debug
+app.get('/debug-whitelist', (req, res) => {
+    try {
+        const debug = {
+            whitelistLength: authService.getWhitelist().length,
+            whitelist: authService.getWhitelist(),
+            tempCodesCount: Object.keys(authService.getTempCodes ? authService.getTempCodes() : {}).length,
+            
+            // Test specific emails
+            emailTests: {
+                'ics.learning.ashoka@gmail.com': authService.isEmailWhitelisted('ics.learning.ashoka@gmail.com'),
+                'shristi.sharma_ug2024@ashoka.edu.in': authService.isEmailWhitelisted('shristi.sharma_ug2024@ashoka.edu.in'),
+                'yashita.mishra_ug2024@ashoka.edu.in': authService.isEmailWhitelisted('yashita.mishra_ug2024@ashoka.edu.in')
+            }
+        };
+
+        // Check file system (if using old version)
+        const whitelistPath = path.join(__dirname, './data/whitelist.json');
+        if (fs.existsSync(whitelistPath)) {
+            const fileContent = fs.readFileSync(whitelistPath, 'utf8');
+            debug.fileSystemWhitelist = JSON.parse(fileContent);
+        } else {
+            debug.fileSystemWhitelist = 'File does not exist';
+        }
+
+        res.json(debug);
+    } catch (error) {
+        res.json({ error: error.message, stack: error.stack });
+    }
+});
+
 app.get('/api/admin/whitelist', requireAdmin, (req, res) => {
     try {
         const whitelist = authService.getWhitelist();
