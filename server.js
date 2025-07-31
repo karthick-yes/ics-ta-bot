@@ -6,7 +6,6 @@ import express from 'express';
 import session from 'express-session';
 import { createClient } from 'redis';
 import { RedisStore } from 'connect-redis';
-import path from 'path';
 import { fileURLToPath } from 'url';
 import { Logger } from './logger.js';
 import { GeminiService } from './services/geminiService.js';
