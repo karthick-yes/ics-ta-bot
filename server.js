@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
-
+import fs from 'fs';
+import path from 'path';
 import fs from 'fs';
 import express from 'express';
 import session from 'express-session';
