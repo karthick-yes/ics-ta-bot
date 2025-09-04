@@ -1,7 +1,10 @@
-// create-initial-whitelist.js
-import authService from './services/authService.js';
+import dotenv from 'dotenv';
+import { createClient } from 'redis';
 
-const initialEmails = [
+dotenv.config();
+
+// --- All whitelisted users ---
+const initialWhitelist = [
   'ics.learning.ashoka@gmail.com',
   'aalok.thakkar@ashoka.edu.in',
   'aadi.grover_ug2024@ashoka.edu.in',
@@ -32,11 +35,51 @@ const initialEmails = [
   'vedant.gautam_ug2023@ashoka.edu.in'
 ];
 
+// --- Admins (must also be part of the whitelist) ---
+const initialAdmins = [
+  'ics.learning.ashoka@gmail.com',
+  'aalok.thakkar@ashoka.edu.in'
+];
 
+async function seedData() {
+  if (!process.env.REDIS_URL) {
+    console.error('Error: REDIS_URL is not defined in your .env file.');
+    return;
+  }
 
-initialEmails.forEach(email => {
-  authService.addToWhitelist(email);
-  console.log(`Added: ${email}`);
-});
+  const redisClient = createClient({ url: process.env.REDIS_URL });
+  redisClient.on('error', (err) => console.error('Redis Client Error', err));
 
-console.log('Initial whitelist created!');
+  try {
+    await redisClient.connect();
+    console.log(' Connected to Redis...');
+
+    const whitelistKey = 'whitelisted_emails';
+    const adminKey = 'admin_emails';
+
+    // --- Seed whitelist ---
+    const whitelistResult = await redisClient.sAdd(whitelistKey, initialWhitelist);
+    console.log(` Added ${whitelistResult} new emails to whitelist.`);
+
+    const whitelistCount = await redisClient.sCard(whitelistKey);
+    console.log(`Whitelist total: ${whitelistCount}`);
+
+    // --- Seed admins (ensures they’re also in the whitelist) ---
+    const adminResult = await redisClient.sAdd(adminKey, initialAdmins);
+    console.log(`Added ${adminResult} new emails to admin list.`);
+
+    // Double-check: add admins into whitelist too (in case someone forgot)
+    await redisClient.sAdd(whitelistKey, initialAdmins);
+
+    const adminCount = await redisClient.sCard(adminKey);
+    console.log(`Admin list total: ${adminCount}`);
+
+  } catch (err) {
+    console.error('Failed to seed data:', err);
+  } finally {
+    await redisClient.quit();
+    console.log('Disconnected from Redis.');
+  }
+}
+
+seedData();
