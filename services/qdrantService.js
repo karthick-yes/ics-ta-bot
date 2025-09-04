@@ -5,7 +5,6 @@ import { Logger } from "../logger.js";
 import { GoogleGenAI } from "@google/genai";
 import fs from 'fs/promises';
 import path from 'path';
-import { fileURLToPath } from 'url';
 
 import { marked } from 'marked';
 import pdfParse from 'pdf-parse';

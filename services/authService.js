@@ -1,92 +1,82 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import emailService from './emailService.js';
+import { redisClient } from '../redisClient.js';
 
-// You can use PostgreSQL, MongoDB, or even a simple SQLite with better persistence
-// This example shows the structure - replace with your chosen database
-
+//kept redis for the following: if the admin panel wants to add admin-emails dynamically then redis will be a good use case.
+// Authservice class implementation
 class AuthService {
     constructor() {
-        this.initializeWithStaticWhitelist();
-    }
 
-    // Temporary solution: Initialize with hardcoded whitelist
-    initializeWithStaticWhitelist() {
-        this.staticWhitelist = [
-            'ics.learning.ashoka@gmail.com',
-            'aalok.thakkar@ashoka.edu.in',
-            'aadi.grover_ug2024@ashoka.edu.in',
-            'adityaveer.dahiya_ug25@ashoka.edu.in',
-            'anushka.garimella_ug2024@ashoka.edu.in',
-            'aryan.gupta_ug2024@ashoka.edu.in',
-            'cian.chengappa_ug2024@ashoka.edu.in',
-            'denzel.chinda_ug2024@ashoka.edu.in',
-            'fateh.gyani_ug25@ashoka.edu.in',
-            'joanne.korah_ug2024@ashoka.edu.in',
-            'keerthana.panchanathan_ug25@ashoka.edu.in',
-            'larry.tayenjam_ug2024@ashoka.edu.in',
-            'lerno.parion_ug2024@ashoka.edu.in',
-            'madhurima.banerjee_ug2023@ashoka.edu.in',
-            'megha.mudakkayil_ug2024@ashoka.edu.in',
-            'mohammad.rahman_ug2024@ashoka.edu.in',
-            'monika.pandey_ug2024@ashoka.edu.in',
-            'munashe.nyagono_ug2024@ashoka.edu.in',
-            'naman.anshumaan_ug2024@ashoka.edu.in',
-            'raj.karan_ug2024@ashoka.edu.in',
-            'samyak.khobragade_ug2024@ashoka.edu.in',
-            'shristi.sharma_ug2024@ashoka.edu.in',
-            'surya.singh_ug2023@ashoka.edu.in',
-            'vedant.rana_ug2023@ashoka.edu.in',
-            'velpula.raju_ug2024@ashoka.edu.in',
-            'yashita.mishra_ug2024@ashoka.edu.in',
-            'charchit.agarwal_ug2023@ashoka.edu.in',
-            'vedant.gautam_ug2023@ashoka.edu.in'
-        ];
-        
-        // In-memory storage for temp codes (will reset on restart, but that's ok for temp codes)
         this.tempCodes = {};
+        this.whitelistKey = 'whitelisted_emails';
+        this.adminEmails = 'admin_emails';
     }
 
-    getWhitelist() {
-        return this.staticWhitelist;
-    }
-
-    addToWhitelist(email) {
-        if (!this.staticWhitelist.includes(email)) {
-            this.staticWhitelist.push(email);
-            console.log(`Added to whitelist: ${email}`);
-            return true;
+    async getAdminlist(){
+        const result = await redisClient.sMembers(this.adminEmails);
+        if (result.length == 0){
+            console.log('No existing admin email list initialized');
         }
-        return false;
+        return result;
     }
 
-    removeFromWhitelist(email) {
-        const index = this.staticWhitelist.indexOf(email);
-        if (index > -1) {
-            this.staticWhitelist.splice(index, 1);
-            console.log(`Removed from whitelist: ${email}`);
-            return true;
+
+    async getWhitelist() {
+        const result = await redisClient.sMembers(this.whitelistKey);
+        if (result.length == 0){
+            console.log(`No existing whitelist to be retrieved`);
         }
-        return false;
+        return result;
     }
 
-    isEmailWhitelisted(email) {
-        const isWhitelisted = this.staticWhitelist.includes(email);
-        console.log(`Checking whitelist for ${email}: ${isWhitelisted}`);
-        return isWhitelisted;
+    async addToWhitelist(email) {
+        const result = await redisClient.SADD(this.whitelistKey, email);
+        if (result == 1) {
+            console.log(`Adding ${email} to the whitelist.`)
+        }
+        return result === 1; 
     }
+
+    async removeFromWhitelist(email) {
+        const result = await redisClient.SREM(this.whitelistKey, email);
+        if (result == 1) {
+            console.log(`Removing ${email} from the whitelist.`)
+        }
+        return result === 1; 
+    }
+
+    async isEmailWhitelisted(email) {
+        const result = await redisClient.sIsMember(this.whitelistKey, email);
+        if (result == 1) {
+            console.log(`${email} is whitelisted.`)
+        }
+        
+        return result === 1;
+    }
+
+    async isEmailAdmin(email){
+        const result = await redisClient.sIsMember(this.adminEmails, email)
+        if (result == 1) {
+            console.log(`${email} is an Admin email.`)
+        }
+
+        return result === 1;
+    }
+
 
     generateVerificationCode() {
         return Math.floor(100000 + Math.random() * 900000).toString();
     }
 
     async requestVerification(email) {
+        // for any  user even the admin, we need to request for verification
         console.log(`Verification requested for: ${email}`);
-        console.log(`Current whitelist has ${this.staticWhitelist.length} emails`);
+        const count = await redisClient.SCARD(this.whitelistKey);
+        console.log(`Current whitelist has ${count} emails`);
         
-        if (!this.isEmailWhitelisted(email)) {
-            console.log(`Email not authorized: ${email}`);
-            console.log(`Available emails: ${this.staticWhitelist.slice(0, 3).join(', ')}...`);
+        if (!(await this.isEmailWhitelisted(email))) {
+            console.warn(`Email not authorized: ${email}`);
             throw new Error('Email not authorized');
         }
 
@@ -139,10 +129,13 @@ class AuthService {
         
         // Clean up used code
         delete this.tempCodes[email];
-        
+
+        const isAdmin = await this.isEmailAdmin(email);          
         // Generate JWT token
         const token = jwt.sign(
-            { email: email },
+            { email: email,
+                role: isAdmin ? "admin" : "user"
+             },
             process.env.JWT_SECRET,
             { expiresIn: '24h' }
         );
