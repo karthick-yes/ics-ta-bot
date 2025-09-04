@@ -1,11 +1,14 @@
 import dotenv from 'dotenv';
 dotenv.config();
+
 import fs from 'fs';
 import path from 'path';
+
 import express from 'express';
 import session from 'express-session';
-import { createClient } from 'redis';
+
 import { RedisStore } from 'connect-redis';
+
 import { fileURLToPath } from 'url';
 import { Logger } from './logger.js';
 import { GeminiService } from './services/geminiService.js';
@@ -19,8 +22,7 @@ import {
     inappropriateContentBlocked,
     register
 } from './metrics.js';
-import { error } from 'console';
-
+import { redisClient, initRedis } from './redisClient.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -29,40 +31,15 @@ const app = express();
 app.set('trust proxy', true);
 const PORT = process.env.PORT || 3000;
 const logger = new Logger();
+
+await initRedis();
+
 const geminiService = new GeminiService();
 const userService = new UserService();
+await userService.init();
 const feedbackService = new FeedbackService();
+await feedbackService.init();
 
-let redisClient = createClient({
-    url: process.env.REDIS_URL,
-    socket: {
-        reconnectStrategy: (retries) => Math.min(retries * 50, 1000)
-    }
-});
-
-redisClient.on('connect', () => {
-    logger.info('Redis client connected to the server')
-});
-
-redisClient.on('ready', () => {
-    logger.info('Redis client ready to use')
-});
-
-redisClient.on('error', err => {
-    logger.error('Redis Client error', {
-        error: err.message,
-        code: err.code,
-        stack: err.stack
-    });
-});
-
-redisClient.on('end', () => {
-    logger.warn('Redis client connection ended');
-});
-
-redisClient.on('reconnecting', () => {
-    logger.info('Redis client reconnecting...');
-});
 
 //debug statement
 try {
@@ -359,6 +336,33 @@ app.post('/api/query', requireAuth, async (req, res) => {
     }
 });
 
+// GET route to fetch all feedback reports and stats
+app.get('/api/admin/feedback', requireAdmin, async (req, res) => {
+    try {
+        const stats = await feedbackService.getReportStats();
+        const reports = await feedbackService.getAllReports(100, req.query.status); // Get up to 100 reports, filter by status if provided
+        res.json({ stats, reports });
+    } catch (error) {
+        logger.error('Failed to get feedback reports for admin', { error: error.message });
+        res.status(500).json({ error: 'Failed to retrieve feedback reports.' });
+    }
+});
+
+// PUT route to update the status of a specific report
+app.put('/api/admin/feedback/:reportId', requireAdmin, async (req, res) => {
+    try {
+        const { reportId } = req.params;
+        const { status } = req.body;
+        const adminEmail = req.user.email; // from requireAdmin middleware
+
+        const result = await feedbackService.updateReportStatus(reportId, status, adminEmail);
+        res.json(result);
+    } catch (error) {
+        logger.error('Failed to update feedback status', { error: error.message });
+        res.status(500).json({ error: 'Failed to update report status.' });
+    }
+});
+
 app.post('/api/feedback', requireAuth, async (req, res) => {
     const { feedback } = req.body;
     const userEmail = req.user.email;
@@ -553,3 +557,6 @@ app.listen(PORT, () => {
     logger.info(`Authentication required - visit http://localhost:${PORT}/auth.html to login`);
     logger.info(`Using Gemini AI model exclusively`);
 });
+
+
+export { redisClient };

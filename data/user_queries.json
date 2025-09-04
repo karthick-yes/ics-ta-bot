@@ -207,6 +207,22 @@
           "responseLength": 65
         }
       ]
+    },
+    "2025-08-11": {
+      "count": 2,
+      "lastQuery": "2025-08-11T09:42:12.874Z",
+      "queries": [
+        {
+          "timestamp": "2025-08-11T06:10:24.159Z",
+          "prompt": "hi thre",
+          "responseLength": 50
+        },
+        {
+          "timestamp": "2025-08-11T09:42:12.874Z",
+          "prompt": "hi there what is up",
+          "responseLength": 90
+        }
+      ]
     }
   },
   "karthiksunil074@gmail.com": {

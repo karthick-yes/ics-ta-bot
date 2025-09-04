@@ -1,0 +1,11 @@
+{"timestamp":"2025-09-03T19:47:11.718Z","level":"INFO","message":"Redis client connected to the server","pid":25352}
+{"timestamp":"2025-09-03T19:47:11.728Z","level":"INFO","message":"Redis client ready to use","pid":25352}
+{"timestamp":"2025-09-03T19:47:11.730Z","level":"INFO","message":"Redis connection established successfully","pid":25352}
+{"timestamp":"2025-09-03T19:47:11.742Z","level":"INFO","message":"Redis test successful:","data":{"testValue":"test_value"},"pid":25352}
+{"timestamp":"2025-09-03T19:47:11.798Z","level":"ERROR","message":"Failed to connect to Redis:","data":{"error":"Socket already opened","redisUrl":"SET"},"pid":25352}
+{"timestamp":"2025-09-03T19:47:11.801Z","level":"INFO","message":"Redis test successful:","data":{"testValue":"test_value"},"pid":25352}
+{"timestamp":"2025-09-03T19:47:11.807Z","level":"INFO","message":"Server is running on http://localhost:3000","pid":25352}
+{"timestamp":"2025-09-03T19:47:11.808Z","level":"INFO","message":"Prometheus metrics available at http://localhost:3000/metrics","pid":25352}
+{"timestamp":"2025-09-03T19:47:11.808Z","level":"INFO","message":"Authentication required - visit http://localhost:3000/auth.html to login","pid":25352}
+{"timestamp":"2025-09-03T19:47:11.809Z","level":"INFO","message":"Using Gemini AI model exclusively","pid":25352}
+{"timestamp":"2025-09-03T19:47:13.066Z","level":"ERROR","message":"Email service connection failed","data":{"error":"Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to\n535 5.7.8  https://support.google.com/mail/?p=BadCredentials d9443c01a7336-24b0d881afasm62439655ad.47 - gsmtp"},"pid":25352}

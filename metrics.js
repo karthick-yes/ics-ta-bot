@@ -10,6 +10,31 @@ promClient.collectDefaultMetrics({
     prefix: 'ics_ta_bot_'
 });
 
+
+const userQueriesTotal = new promClient.Counter({
+    name: 'ics_ta_bot_user_queries_total', 
+    help: 'Total number of queries recorded',
+    labelNames: ['email', 'isAdmin'],
+    registers: [register]
+});
+
+// Count when a user hits their daily limit
+const userQueryLimitHitsTotal = new promClient.Counter({
+    name: 'ics_ta_bot_user_query_limit_hits_total',
+    help: 'Number of times users have hit their daily query limit',
+    labelNames: ['email'],
+    registers: [register]
+});
+
+// Gauge for per-user, per-date daily queries
+const userDailyQueries = new promClient.Gauge({
+    name: 'ics_ta_bot_user_daily_queries',
+    help: 'Daily queries per user/date',
+    labelNames: ['email', 'date'],
+    registers: [register]
+});
+
+
 // Custom metrics
 const httpRequestsTotal = new promClient.Counter({
     name: 'ics_ta_bot_http_requests_total',
@@ -53,6 +78,9 @@ const inappropriateContentBlocked = new promClient.Counter({
 // Export metrics and register
 export { 
     register, 
+    userDailyQueries,
+    userQueriesTotal,
+    userQueryLimitHitsTotal,
     httpRequestsTotal, 
     httpRequestDuration, 
     openaiRequestsTotal, 
