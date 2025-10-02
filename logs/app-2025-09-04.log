@@ -58,3 +58,14 @@
 {"timestamp":"2025-09-04T07:04:50.932Z","level":"INFO","message":"Gemini response generated successfully","data":{"promptLength":61,"responseLength":476,"historyLength":6,"contextUsed":true},"pid":31932}
 {"timestamp":"2025-09-04T07:04:50.938Z","level":"INFO","message":"Admin query recorded (not counted towards limit)","data":{"email":"ics.learning.ashoka@gmail.com"},"pid":31932}
 {"timestamp":"2025-09-04T07:04:50.942Z","level":"INFO","message":"Interaction logged for session 9Rt88nDPxLsrexyQQ54z8XIihroVe3BU","pid":31932}
+{"timestamp":"2025-09-04T13:54:29.774Z","level":"INFO","message":"Redis client connected to the server","pid":37388}
+{"timestamp":"2025-09-04T13:54:29.797Z","level":"INFO","message":"Redis client ready to use","pid":37388}
+{"timestamp":"2025-09-04T13:54:29.798Z","level":"INFO","message":"Redis connection established successfully","pid":37388}
+{"timestamp":"2025-09-04T13:54:29.805Z","level":"INFO","message":"Redis test successful:","data":{"testValue":"test_value"},"pid":37388}
+{"timestamp":"2025-09-04T13:54:29.861Z","level":"ERROR","message":"Failed to connect to Redis:","data":{"error":"Socket already opened","redisUrl":"SET"},"pid":37388}
+{"timestamp":"2025-09-04T13:54:29.865Z","level":"INFO","message":"Redis test successful:","data":{"testValue":"test_value"},"pid":37388}
+{"timestamp":"2025-09-04T13:54:29.872Z","level":"INFO","message":"Server is running on http://localhost:3000","pid":37388}
+{"timestamp":"2025-09-04T13:54:29.873Z","level":"INFO","message":"Prometheus metrics available at http://localhost:3000/metrics","pid":37388}
+{"timestamp":"2025-09-04T13:54:29.873Z","level":"INFO","message":"Authentication required - visit http://localhost:3000/auth.html to login","pid":37388}
+{"timestamp":"2025-09-04T13:54:29.874Z","level":"INFO","message":"Using Gemini AI model exclusively","pid":37388}
+{"timestamp":"2025-09-04T13:54:31.691Z","level":"INFO","message":"Email service connected successfully","data":{"user":"ics.learning.ashoka@***"},"pid":37388}
